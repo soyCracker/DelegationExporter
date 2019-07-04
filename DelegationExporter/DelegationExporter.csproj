@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.1" />
+    <PackageReference Include="itext7" Version="7.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="File\" />
+    <Folder Include="Export\" />
+    <Folder Include="Font\" />
+  </ItemGroup>
+
+</Project>
