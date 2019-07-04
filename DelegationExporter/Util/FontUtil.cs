@@ -20,5 +20,14 @@ namespace DelegationExporter.Util
             string path = Path.Combine(Config.FONT_FOLDER, "msjhbd.ttc,0");
             return PdfFontFactory.CreateFont(path, PdfEncodings.IDENTITY_H, true);
         }
+
+        public static bool IsMsjhbdExist()
+        {
+            if(File.Exists(Path.Combine(Config.FONT_FOLDER, "msjhbd.ttc")))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

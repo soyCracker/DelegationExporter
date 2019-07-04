@@ -1,4 +1,5 @@
 ﻿using DelegationExporter.Base;
+using DelegationExporter.Except;
 using DelegationExporter.Interface;
 using DelegationExporter.Model;
 using DelegationExporter.Util;
@@ -111,15 +112,22 @@ namespace DelegationExporter.Services
 
         private void SetPdfField(IDictionary<string, PdfFormField> fields, SongSanDelegationXlsxModel delegation)
         {
-            //我她X的，SetFont要在SetValue之前
-            Console.WriteLine("學生:" + delegation.Name + "\n");
-            fields[S89PdfField.Name].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Name);
-            Console.WriteLine("助手:" + delegation.Assistant + "\n");
-            fields[S89PdfField.Ass].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Assistant);
-            Console.WriteLine("日期:" + delegation.Date + "\n");
-            fields[S89PdfField.Date].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Date);
-            SetPdfFieldDelegation(fields, delegation);
-            SetPdfFieldClass(fields, delegation);
+            if(FontUtil.IsMsjhbdExist())
+            {
+                //我她X的，SetFont要在SetValue之前
+                Console.WriteLine("學生:" + delegation.Name + "\n");
+                fields[S89PdfField.Name].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Name);
+                Console.WriteLine("助手:" + delegation.Assistant + "\n");
+                fields[S89PdfField.Ass].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Assistant);
+                Console.WriteLine("日期:" + delegation.Date + "\n");
+                fields[S89PdfField.Date].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Date);
+                SetPdfFieldDelegation(fields, delegation);
+                SetPdfFieldClass(fields, delegation);
+            }
+            else
+            {
+                throw new NoFontException();
+            }
         }
 
         public List<SongSanDelegationXlsxModel> ReadDelegation(string filePath, string sheetName)

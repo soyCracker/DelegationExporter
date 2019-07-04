@@ -1,4 +1,5 @@
 ﻿using DelegationExporter.Base;
+using DelegationExporter.Except;
 using DelegationExporter.Services;
 using System;
 using System.IO;
@@ -12,6 +13,8 @@ namespace DelegationExporter
             PrintInfo();
 
             Work();
+
+            End();
         }
 
         public static void PrintInfo()
@@ -30,11 +33,25 @@ namespace DelegationExporter
                 Console.WriteLine("-------------------------------\n");
                 Console.WriteLine("Work End!!\n");
             }
-            catch (IOException)
+            catch(IOException)
             {
-                Console.WriteLine("請關閉excel再試一次\n");
-                throw;
+                Console.WriteLine("可能excel,pdf檔案不存在，或是檔案正被使用中請關閉檔案再試一次\n");
             }
+            catch(NoFontException)
+            {
+                Console.WriteLine("字型檔案不存在，請檢查Font資料夾或重新下載程式\n");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("錯誤，請複製以下資訊給開發者:" + ex + "\n");
+            }
+        }
+
+        public static void End()
+        {
+            Console.WriteLine("-------------------------------\n");
+            Console.WriteLine("按兩次Enter結束程式");
+            Console.ReadLine();
         }
     }
 }

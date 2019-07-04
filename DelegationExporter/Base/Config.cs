@@ -7,9 +7,9 @@ namespace DelegationExporter.Base
     public class Config
     {
         //program info
-        public static string VERSION = "1.0.0-20190703";
+        public static string VERSION = "1.0.1-20190704";
 
-        public static string GIT_URL = "";
+        public static string GIT_URL = "https://github.com/soyCracker/DelegationExporter/releases";
 
         ///file path
         public static string FILE_FOLDER = "File";
