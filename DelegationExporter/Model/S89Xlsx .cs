@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace DelegationExporter.Model
 {
-    public class SongSanDelegationXlsxModel
+    public class S89Xlsx
     {
         public string Name { get; set; }
 

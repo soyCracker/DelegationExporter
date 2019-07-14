@@ -14,19 +14,19 @@ using System.IO;
 
 namespace DelegationExporter.Services
 {
-    public class S89chService : IDelegationService<SongSanDelegationXlsxModel>
+    public class TwNantouService : IDelegationService
     {
-        public void Work()
+        public void DoWork()
         {
             string destFolder = GetFolder();
-            ReadProcess(destFolder, Config.BRO_SHEET);           
-            ReadProcess(destFolder, Config.SIS_SHEET);
+            Process(destFolder, Config.BRO_SHEET);           
+            Process(destFolder, Config.SIS_SHEET);
         }
 
-        private void ReadProcess(string destFolder, string genderSheet)
+        private void Process(string destFolder, string genderSheet)
         {
-            List<SongSanDelegationXlsxModel> list = ReadDelegation(Config.FILE_FOLDER + "//" + Config.TARGET_XLSX, genderSheet);
-            foreach (SongSanDelegationXlsxModel element in list)
+            List<S89Xlsx> list = ReadDelegation<S89Xlsx>(Config.FILE_FOLDER + "//" + Config.TARGET_XLSX, genderSheet);
+            foreach (S89Xlsx element in list)
             {
                 WriteDelegation(element, destFolder);
             }
@@ -41,11 +41,11 @@ namespace DelegationExporter.Services
             return Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow();
         }
 
-        private void SetXlsxList(ISheet sheet, int rowNum, List<SongSanDelegationXlsxModel> s89List)
+        private void SetXlsxList(ISheet sheet, int rowNum, List<S89Xlsx> s89List)
         {
             if (sheet.GetRow(rowNum).GetCell(5).ToString().Equals("V") || sheet.GetRow(rowNum).GetCell(5).ToString().Equals("v"))
             {
-                SongSanDelegationXlsxModel s89Model = new SongSanDelegationXlsxModel();
+                S89Xlsx s89Model = new S89Xlsx();
                 s89Model.Name = sheet.GetRow(rowNum).GetCell(0).ToString();
                 try
                 {
@@ -64,7 +64,7 @@ namespace DelegationExporter.Services
 
         
 
-        private void SetPdfFieldDelegation(IDictionary<string, PdfFormField> fields, SongSanDelegationXlsxModel delegation)
+        private void SetPdfFieldDelegation(IDictionary<string, PdfFormField> fields, S89Xlsx delegation)
         {
             Console.WriteLine("委派:" + delegation.Delegation + "\n");
             switch (delegation.Delegation)
@@ -93,7 +93,7 @@ namespace DelegationExporter.Services
             }
         }
 
-        private void SetPdfFieldClass(IDictionary<string, PdfFormField> fields, SongSanDelegationXlsxModel delegation)
+        private void SetPdfFieldClass(IDictionary<string, PdfFormField> fields, S89Xlsx delegation)
         {
             Console.WriteLine("班別:" + delegation.Class + "\n");
             switch (delegation.Class)
@@ -110,7 +110,7 @@ namespace DelegationExporter.Services
             }
         }
 
-        private void SetPdfField(IDictionary<string, PdfFormField> fields, SongSanDelegationXlsxModel delegation)
+        private void SetPdfField(IDictionary<string, PdfFormField> fields, S89Xlsx delegation)
         {
             if(FontUtil.IsMsjhbdExist())
             {
@@ -130,14 +130,14 @@ namespace DelegationExporter.Services
             }
         }
 
-        public List<SongSanDelegationXlsxModel> ReadDelegation(string filePath, string sheetName)
+        public List<T> ReadDelegation<T>(string filePath, string sheetName)
         {
             try
             {
                 FileStream fs = new FileStream(filePath, FileMode.Open);
                 IWorkbook workbook = new XSSFWorkbook(fs);
                 ISheet sheet = workbook.GetSheet(sheetName);
-                List<SongSanDelegationXlsxModel> s89List = new List<SongSanDelegationXlsxModel>();
+                List<S89Xlsx> s89List = new List<S89Xlsx>();
                 for (int i = 1; i <= sheet.LastRowNum; i++)
                 {
                     try
@@ -151,7 +151,7 @@ namespace DelegationExporter.Services
                 }
                 workbook.Close();
                 fs.Close();
-                return s89List;
+                return s89List as List<T>;
             }
             catch (IOException)
             {
@@ -159,9 +159,10 @@ namespace DelegationExporter.Services
             }
         }
 
-        public void WriteDelegation(SongSanDelegationXlsxModel delegation, string destFolder)
+        public void WriteDelegation<T>(T delegationT, string destFolder)
         {
             Console.WriteLine("-------------------------------\n");
+            S89Xlsx delegation = delegationT as S89Xlsx;
             using (FileStream fs = new FileStream(Config.FILE_FOLDER + "//" + Config.PDF_FILE, FileMode.Open))
             {
                 PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), new PdfWriter(destFolder + "//" + delegation.Name + ".pdf")); 

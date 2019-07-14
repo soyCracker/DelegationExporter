@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace DelegationExporter.Base
 {
     public class Config
     {
+        //process mode
+        public static bool RELEASE_MODE = true;
+
         //program info
-        public static string VERSION = "1.0.1-20190704";
+        public static string VERSION = "1.0.2-20190714";
 
         public static string GIT_URL = "https://github.com/soyCracker/DelegationExporter/releases";
 
-        ///file path
+        //file path
         public static string FILE_FOLDER = "File";
 
         public static string OUTPUT_FOLDER = "Export";
 
-        public static string SETTING_FILE = "setting";
+        public static string CONFIG_FILE = "config.json";
 
         public static string TARGET_XLSX = "S89.xlsx";
 

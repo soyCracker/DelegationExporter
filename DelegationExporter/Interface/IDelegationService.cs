@@ -1,15 +1,12 @@
-﻿using DelegationExporter.Model;
-using NPOI.SS.Formula.Functions;
-using NPOI.SS.UserModel;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace DelegationExporter.Interface
 {
-    public interface IDelegationService <T>
+    public interface IDelegationService
     {
-        List<T> ReadDelegation(string filePath, string sheetName);
+        void DoWork();
+
+        List<T> ReadDelegation<T>(string filePath, string sheetName);
 
         /// <summary>
         /// 
@@ -17,7 +14,7 @@ namespace DelegationExporter.Interface
         /// <param name="delegation"></param>
         /// <param name="destFolder"></param>
         /// <returns>person name, as pdf name</returns>
-        void WriteDelegation(SongSanDelegationXlsxModel delegation, string destFolder);
+        void WriteDelegation<T>(T delegation, string destFolder);
 
     }
 }
