@@ -4,9 +4,9 @@ namespace DelegationExporter.Interface
 {
     public interface IDelegationService
     {
-        void DoWork();
+        //void DoWork();
 
-        List<T> ReadDelegation<T>(string filePath, string sheetName);
+        List<T> ReadDelegation<T>(string filePath);
 
         /// <summary>
         /// 
@@ -16,5 +16,8 @@ namespace DelegationExporter.Interface
         /// <returns>person name, as pdf name</returns>
         void WriteDelegation<T>(T delegation, string destFolder);
 
+        string BeforePrepareAndGetTempXlsx();
+
+        //void AfterClear(string tempXlsxFilePath);
     }
 }

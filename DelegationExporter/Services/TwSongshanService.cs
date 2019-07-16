@@ -18,29 +18,51 @@ namespace DelegationExporter.Services
     public class TwSongshanService : IDelegationService
     {
         private string tempDate = "";
+        private string tempXlsxFilePath = Config.FILE_FOLDER + "//" + Config.TEMP_NAME + ExternalConfig.Get().TargetXlsx;
 
-        public void DoWork()
+        public List<T> ReadDelegation<T>(string filePath)
         {
-            string destFolder = GetFolder();
-            Process(destFolder, Config.BRO_SHEET);
-        }
-
-        private void Process(string destFolder, string genderSheet)
-        {
-            List<S89Xlsx> list = ReadDelegation<S89Xlsx>(Config.FILE_FOLDER + "//" + ExternalConfig.Get().TargetXlsx, genderSheet);
-            foreach (S89Xlsx element in list)
+            try
             {
-                WriteDelegation(element, destFolder);
+                FileStream fs = new FileStream(filePath, FileMode.Open);
+                IWorkbook workbook;
+                try
+                {
+                    workbook = new XSSFWorkbook(fs);
+                }
+                catch (Exception)
+                {
+                    workbook = new HSSFWorkbook(fs);
+                }
+                ISheet sheet = workbook.GetSheetAt(0);
+                List<S89Xlsx> s89List = new List<S89Xlsx>();
+                for (int i = 4; i <= sheet.LastRowNum; i++)
+                {
+                    SetXlsxList(sheet, i, s89List, 1);
+                    SetXlsxList(sheet, i, s89List, 2);
+                }
+                workbook.Close();
+                fs.Close();
+                return s89List as List<T>;
+            }
+            catch (IOException)
+            {
+                throw;
             }
         }
 
-        private string GetFolder()
+        public void WriteDelegation<T>(T delegationT, string destFolder)
         {
-            if (!Directory.Exists(Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow()))
+            Console.WriteLine("-------------------------------\n");
+            S89Xlsx delegation = delegationT as S89Xlsx;
+            using (FileStream fs = new FileStream(Config.FILE_FOLDER + "//" + Config.PDF_FILE, FileMode.Open))
             {
-                Directory.CreateDirectory(Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow());
+                PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), new PdfWriter(destFolder + "//" + delegation.Name + ".pdf"));
+                PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
+                IDictionary<string, PdfFormField> fields = form.GetFormFields();
+                SetPdfField(fields, delegation);
+                pdfDoc.Close();
             }
-            return Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow();
         }
 
         private void SetXlsxList(ISheet sheet, int rowNum, List<S89Xlsx> s89List, int classInt)
@@ -86,8 +108,6 @@ namespace DelegationExporter.Services
             }
             s89List.Add(s89Model);
         }
-
-
 
         private void SetPdfFieldDelegation(IDictionary<string, PdfFormField> fields, S89Xlsx delegation)
         {
@@ -155,56 +175,10 @@ namespace DelegationExporter.Services
             }
         }
 
-        public List<T> ReadDelegation<T>(string filePath, string sheetName)
+        public string BeforePrepareAndGetTempXlsx()
         {
-            try
-            {
-                FileStream fs = new FileStream(filePath, FileMode.Open);
-                IWorkbook workbook;
-                try
-                {
-                    workbook = new XSSFWorkbook(fs);
-                }
-                catch(Exception)
-                {
-                    workbook = new HSSFWorkbook(fs);
-                }
-                ISheet sheet = workbook.GetSheetAt(0);//.GetSheet(sheetName);
-                List<S89Xlsx> s89List = new List<S89Xlsx>();
-                for (int i = 4; i <= sheet.LastRowNum; i++)
-                {
-                    try
-                    {
-                        SetXlsxList(sheet, i, s89List, 1);
-                        SetXlsxList(sheet, i, s89List, 2);
-                    }
-                    catch (NullReferenceException)
-                    {
-                        //沒有要export
-                    }
-                }
-                workbook.Close();
-                fs.Close();
-                return s89List as List<T>;
-            }
-            catch (IOException)
-            {
-                throw;
-            }
-        }
-
-        public void WriteDelegation<T>(T delegationT, string destFolder)
-        {
-            Console.WriteLine("-------------------------------\n");
-            S89Xlsx delegation = delegationT as S89Xlsx;
-            using (FileStream fs = new FileStream(Config.FILE_FOLDER + "//" + Config.PDF_FILE, FileMode.Open))
-            {
-                PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), new PdfWriter(destFolder + "//" + delegation.Name + ".pdf"));
-                PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
-                IDictionary<string, PdfFormField> fields = form.GetFormFields();
-                SetPdfField(fields, delegation);
-                pdfDoc.Close();
-            }
+            FileUtil.CopyTemp(Config.FILE_FOLDER + "//" + ExternalConfig.Get().TargetXlsx, tempXlsxFilePath);
+            return tempXlsxFilePath;
         }
     }
 }

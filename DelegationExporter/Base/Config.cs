@@ -4,10 +4,10 @@ namespace DelegationExporter.Base
     public class Config
     {
         //process mode
-        public static bool RELEASE_MODE = true;
+        public static bool RELEASE_MODE = false;
 
         //program info
-        public static string VERSION = "1.0.2-20190714";
+        public static string VERSION = "1.0.3-dev-20190716";
 
         public static string GIT_URL = "https://github.com/soyCracker/DelegationExporter/releases";
 
@@ -27,5 +27,7 @@ namespace DelegationExporter.Base
         public static string PDF_FILE = "S-89-CH.pdf";
 
         public static string FONT_FOLDER = "Font";
+
+        public static string TEMP_NAME = "TEMPX";
     }
 }

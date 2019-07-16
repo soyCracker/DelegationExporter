@@ -16,31 +16,6 @@ namespace DelegationExporter.Services
 {
     public class TwNantouService : IDelegationService
     {
-        public void DoWork()
-        {
-            string destFolder = GetFolder();
-            Process(destFolder, Config.BRO_SHEET);           
-            Process(destFolder, Config.SIS_SHEET);
-        }
-
-        private void Process(string destFolder, string genderSheet)
-        {
-            List<S89Xlsx> list = ReadDelegation<S89Xlsx>(Config.FILE_FOLDER + "//" + Config.TARGET_XLSX, genderSheet);
-            foreach (S89Xlsx element in list)
-            {
-                WriteDelegation(element, destFolder);
-            }
-        }
-
-        private string GetFolder()
-        {
-            if (!Directory.Exists(Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow()))
-            {
-                Directory.CreateDirectory(Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow());
-            }
-            return Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow();
-        }
-
         private void SetXlsxList(ISheet sheet, int rowNum, List<S89Xlsx> s89List)
         {
             if (sheet.GetRow(rowNum).GetCell(5).ToString().Equals("V") || sheet.GetRow(rowNum).GetCell(5).ToString().Equals("v"))
@@ -130,25 +105,29 @@ namespace DelegationExporter.Services
             }
         }
 
-        public List<T> ReadDelegation<T>(string filePath, string sheetName)
+        public List<T> ReadDelegation<T>(string filePath)
         {
             try
             {
+                
                 FileStream fs = new FileStream(filePath, FileMode.Open);
                 IWorkbook workbook = new XSSFWorkbook(fs);
-                ISheet sheet = workbook.GetSheet(sheetName);
                 List<S89Xlsx> s89List = new List<S89Xlsx>();
-                for (int i = 1; i <= sheet.LastRowNum; i++)
+                for (int i = 0; i < 2; i++)
                 {
-                    try
+                    ISheet sheet = workbook.GetSheetAt(i);
+                    for (int j = 1; j <= sheet.LastRowNum; j++)
                     {
-                        SetXlsxList(sheet, i, s89List);
+                        try
+                        {
+                            SetXlsxList(sheet, j, s89List);
+                        }
+                        catch (NullReferenceException)
+                        {
+                            //沒有要export
+                        }
                     }
-                    catch (NullReferenceException)
-                    {
-                        //沒有要export
-                    }
-                }
+                }         
                 workbook.Close();
                 fs.Close();
                 return s89List as List<T>;
@@ -171,6 +150,13 @@ namespace DelegationExporter.Services
                 SetPdfField(fields, delegation);
                 pdfDoc.Close();
             }
+        }
+
+        public string BeforePrepareAndGetTempXlsx()
+        {
+            string tempXlsxFilePath = Config.FILE_FOLDER + "//" + Config.TEMP_NAME + Config.TARGET_XLSX;
+            FileUtil.CopyTemp(Config.FILE_FOLDER + "//" + Config.TARGET_XLSX, tempXlsxFilePath);
+            return tempXlsxFilePath;
         }
     }
 }
