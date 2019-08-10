@@ -87,15 +87,15 @@ namespace DelegationExporter.Services
 
         private void SetPdfField(IDictionary<string, PdfFormField> fields, S89Xlsx delegation)
         {
-            if(FontUtil.IsMsjhbdExist())
+            if(PdfUtil.IsMsjhbdExist())
             {
                 //我她X的，SetFont要在SetValue之前
                 Console.WriteLine("學生:" + delegation.Name + "\n");
-                fields[S89PdfField.Name].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Name);
+                fields[S89PdfField.Name].SetFont(PdfUtil.GetMsjhbdFont()).SetValue(delegation.Name);
                 Console.WriteLine("助手:" + delegation.Assistant + "\n");
-                fields[S89PdfField.Ass].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Assistant);
+                fields[S89PdfField.Ass].SetFont(PdfUtil.GetMsjhbdFont()).SetValue(delegation.Assistant);
                 Console.WriteLine("日期:" + delegation.Date + "\n");
-                fields[S89PdfField.Date].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Date);
+                fields[S89PdfField.Date].SetFont(PdfUtil.GetMsjhbdFont()).SetValue(delegation.Date);
                 SetPdfFieldDelegation(fields, delegation);
                 SetPdfFieldClass(fields, delegation);
             }

@@ -2,6 +2,7 @@
 using DelegationExporter.Services;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DelegationExporter
 {
@@ -9,6 +10,9 @@ namespace DelegationExporter
     {
         static void Main(string[] args)
         {
+            //UpdateService updater = new UpdateService();
+            //await updater.IsNewVer();
+
             InitEnvironment();
 
             PrintInfo();

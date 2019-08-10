@@ -16,6 +16,7 @@ namespace DelegationExporter.Model
         public static string BibleStudy = "bibleStudy0";
         public static string Talk = "talk0";
         public static string Other = "other0";
+        public static string OtherText = "otherText0";
         public static string Class1 = "mainHall0";
         public static string Class2 = "auxiliaryCR1_0";
         public static string Class3 = "auxiliaryCR2_0";

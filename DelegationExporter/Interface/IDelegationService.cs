@@ -17,7 +17,5 @@ namespace DelegationExporter.Interface
         void WriteDelegation<T>(T delegation, string destFolder);
 
         string BeforePrepareAndGetTempXlsx();
-
-        //void AfterClear(string tempXlsxFilePath);
     }
 }

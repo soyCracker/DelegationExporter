@@ -60,8 +60,8 @@ namespace DelegationExporter.Services
                 PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), new PdfWriter(destFolder + "//" + delegation.Name + ".pdf"));
                 PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
                 IDictionary<string, PdfFormField> fields = form.GetFormFields();
-                SetPdfField(fields, delegation);
-                pdfDoc.Close();
+                SetPdfField(fields, delegation, pdfDoc);               
+                pdfDoc.Close();    
             }
         }
 
@@ -109,45 +109,50 @@ namespace DelegationExporter.Services
             s89List.Add(s89Model);
         }
 
-        private void SetPdfFieldDelegation(IDictionary<string, PdfFormField> fields, S89Xlsx delegation)
+        private void SetPdfFieldDelegation(IDictionary<string, PdfFormField> fields, S89Xlsx delegation, PdfDocument pdfDoc)
         {
             Console.WriteLine("委派:" + delegation.Delegation + "\n");
             if(delegation.Delegation.Contains("經文朗讀"))
             {
-                fields[S89PdfField.Reading].SetCheckType(PdfFormField.TYPE_CHECK).SetValue("true");
+                PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.Reading);
             }
             else if(delegation.Delegation.Contains("初次交談"))
             {
-                fields[S89PdfField.InitialCall].SetCheckType(PdfFormField.TYPE_CHECK).SetValue("true");
+                PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.InitialCall);
             }
             else if (delegation.Delegation.Contains("第一次續訪"))
             {
-                fields[S89PdfField.FirstRV].SetCheckType(PdfFormField.TYPE_CHECK).SetValue("true");
+                PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FirstRV);
             }
             else if (delegation.Delegation.Contains("第二次續訪"))
             {
-                fields[S89PdfField.SecondRV].SetCheckType(PdfFormField.TYPE_CHECK).SetValue("true");
+                PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.SecondRV);
             }
             else if (delegation.Delegation.Contains("聖經研究") || delegation.Delegation.Contains("聖經討論"))
             {
-                fields[S89PdfField.BibleStudy].SetCheckType(PdfFormField.TYPE_CHECK).SetValue("true");
+                PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.BibleStudy);
             }
             else if (delegation.Delegation.Contains("演講"))
             {
-                fields[S89PdfField.Talk].SetCheckType(PdfFormField.TYPE_CHECK).SetValue("true");
+                PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.Talk);
+            }
+            else
+            {
+                PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.Other);
+                PdfUtil.SetPdfFeldValueSmall(fields, pdfDoc, S89PdfField.OtherText, delegation.Delegation.Split('(')[0]);
             }
         }
 
-        private void SetPdfFieldClass(IDictionary<string, PdfFormField> fields, S89Xlsx delegation)
+        private void SetPdfFieldClass(IDictionary<string, PdfFormField> fields, S89Xlsx delegation, PdfDocument pdfDoc)
         {
             Console.WriteLine("班別:" + delegation.Class + "\n");
             switch (delegation.Class)
             {
                 case "1":
-                    fields[S89PdfField.Class1].SetCheckType(PdfFormField.TYPE_CHECK).SetValue("true");
+                    PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.Class1);
                     break;
                 case "2":
-                    fields[S89PdfField.Class2].SetCheckType(PdfFormField.TYPE_CHECK).SetValue("true");
+                    PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.Class2);
                     break;
                 default:
                     Console.WriteLine("班別填錯了吧\n");
@@ -155,19 +160,19 @@ namespace DelegationExporter.Services
             }
         }
 
-        private void SetPdfField(IDictionary<string, PdfFormField> fields, S89Xlsx delegation)
+        private void SetPdfField(IDictionary<string, PdfFormField> fields, S89Xlsx delegation, PdfDocument pdfDoc)
         {
-            if (FontUtil.IsMsjhbdExist())
+            if (PdfUtil.IsMsjhbdExist())
             {
                 //我她X的，SetFont要在SetValue之前
                 Console.WriteLine("學生:" + delegation.Name + "\n");
-                fields[S89PdfField.Name].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Name);
+                PdfUtil.SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.Name, delegation.Name);
                 Console.WriteLine("助手:" + delegation.Assistant + "\n");
-                fields[S89PdfField.Ass].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Assistant);
+                PdfUtil.SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.Ass, delegation.Assistant);
                 Console.WriteLine("日期:" + delegation.Date + "\n");
-                fields[S89PdfField.Date].SetFont(FontUtil.GetMsjhbdFont()).SetValue(delegation.Date);
-                SetPdfFieldDelegation(fields, delegation);
-                SetPdfFieldClass(fields, delegation);
+                PdfUtil.SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.Date, delegation.Date);
+                SetPdfFieldDelegation(fields, delegation, pdfDoc);
+                SetPdfFieldClass(fields, delegation, pdfDoc);
             }
             else
             {
@@ -177,6 +182,10 @@ namespace DelegationExporter.Services
 
         public string BeforePrepareAndGetTempXlsx()
         {
+            if(File.Exists(tempXlsxFilePath))
+            {
+                File.Delete(tempXlsxFilePath);
+            }
             FileUtil.CopyTemp(Config.FILE_FOLDER + "//" + ExternalConfig.Get().TargetXlsx, tempXlsxFilePath);
             return tempXlsxFilePath;
         }

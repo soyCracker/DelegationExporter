@@ -24,14 +24,16 @@ namespace DelegationExporter.Services
             {
                 Process();
             }
-            catch (IOException)
+            catch (IOException ex)
             {
                 Console.WriteLine("可能excel或pdf檔案不存在、config內的檔名填錯，或是檔案正被使用中請關閉所有檔案再試一次\n");
+                Console.WriteLine(ex + "\n");
             }
-            catch (NoFontException)
+            catch (NoFontException ex)
             {
                 Console.WriteLine("字型檔案不存在，請檢查Font資料夾或重新下載程式\n");
                 Console.WriteLine("Update Web url:" + Config.GIT_URL + "\n");
+                Console.WriteLine(ex + "\n");
             }
             catch (Exception ex)
             {
