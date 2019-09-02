@@ -138,18 +138,21 @@ namespace DelegationExporter.Services
             }
         }
 
-        public void WriteDelegation<T>(T delegationT, string destFolder)
+        public void WriteDelegation<T>(List<T> delegationList, string destFolder)
         {
-            Console.WriteLine("-------------------------------\n");
-            S89Xlsx delegation = delegationT as S89Xlsx;
-            using (FileStream fs = new FileStream(Config.FILE_FOLDER + "//" + Config.PDF_FILE, FileMode.Open))
+            List<S89Xlsx> list = delegationList as List<S89Xlsx>;
+            foreach (S89Xlsx delegation in list)
             {
-                PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), new PdfWriter(destFolder + "//" + delegation.Name + ".pdf")); 
-                PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
-                IDictionary<string, PdfFormField> fields = form.GetFormFields();
-                SetPdfField(fields, delegation);
-                pdfDoc.Close();
-            }
+                Console.WriteLine("-------------------------------\n");
+                using (FileStream fs = new FileStream(Config.FILE_FOLDER + "//" + Config.S89CH, FileMode.Open))
+                {
+                    PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), new PdfWriter(destFolder + "//" + delegation.Name + ".pdf"));
+                    PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
+                    IDictionary<string, PdfFormField> fields = form.GetFormFields();
+                    SetPdfField(fields, delegation);
+                    pdfDoc.Close();
+                }
+            }              
         }
 
         public string BeforePrepareAndGetTempXlsx()

@@ -51,17 +51,33 @@ namespace DelegationExporter.Services
             }
         }
 
-        public void WriteDelegation<T>(T delegationT, string destFolder)
+        public void WriteDelegation<T>(List<T> delegationList, string destFolder)
         {
-            Console.WriteLine("-------------------------------\n");
-            S89Xlsx delegation = delegationT as S89Xlsx;
-            using (FileStream fs = new FileStream(Config.FILE_FOLDER + "//" + Config.PDF_FILE, FileMode.Open))
+            List<S89Xlsx> list = delegationList as List<S89Xlsx>;
+            foreach (S89Xlsx delegation in list)
             {
-                PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), new PdfWriter(destFolder + "//" + delegation.Name + ".pdf"));
+                Console.WriteLine("-------------------------------\n");
+                string s89 = Config.S89CH;
+                string description = "傳道與生活聚會委派通知單-";
+                if (delegation.Name.Contains("JP"))
+                {
+                    s89 = Config.S89J;
+                    description = description + "日語-";
+                    delegation.Name.Replace("JP", "");
+                }
+                WriteDelegationInLanguage(s89, delegation, destFolder, description);               
+            }
+        }
+
+        private void WriteDelegationInLanguage(string s89, S89Xlsx delegation, string destFolder, string description)
+        {
+            using (FileStream fs = new FileStream(Config.FILE_FOLDER + "//" + s89, FileMode.Open))
+            {    
+                PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), new PdfWriter(PdfUtil.FileNameExistAddR(destFolder + "//" + description + delegation.Name+".pdf")));
                 PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
                 IDictionary<string, PdfFormField> fields = form.GetFormFields();
-                SetPdfField(fields, delegation, pdfDoc);               
-                pdfDoc.Close();    
+                SetPdfField(fields, delegation, pdfDoc);
+                pdfDoc.Close();
             }
         }
 
@@ -169,8 +185,8 @@ namespace DelegationExporter.Services
                 PdfUtil.SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.Name, delegation.Name);
                 Console.WriteLine("助手:" + delegation.Assistant + "\n");
                 PdfUtil.SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.Ass, delegation.Assistant);
-                Console.WriteLine("日期:" + delegation.Date + "\n");
-                PdfUtil.SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.Date, delegation.Date);
+                Console.WriteLine("日期:" + delegation.Date + "-" + delegation.Delegation + "\n");
+                PdfUtil.SetPdfFeldValueSmall(fields, pdfDoc, S89PdfField.Date, delegation.Date + "-" + delegation.Delegation);
                 SetPdfFieldDelegation(fields, delegation, pdfDoc);
                 SetPdfFieldClass(fields, delegation, pdfDoc);
             }

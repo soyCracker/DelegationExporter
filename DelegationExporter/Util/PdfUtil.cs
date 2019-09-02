@@ -82,5 +82,18 @@ namespace DelegationExporter.Util
                 page.RemoveAnnotation(annotation);
             }
         }
+
+        public static string FileNameExistAddR(string filePath)
+        {
+            string result = filePath;
+            while (true)
+            {
+                if (!File.Exists(result))
+                {
+                    return result;
+                }
+                result = result.Replace(".pdf","R") + ".pdf";
+            }
+        }
     }
 }

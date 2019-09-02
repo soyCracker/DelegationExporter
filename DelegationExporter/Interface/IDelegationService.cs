@@ -14,7 +14,7 @@ namespace DelegationExporter.Interface
         /// <param name="delegation"></param>
         /// <param name="destFolder"></param>
         /// <returns>person name, as pdf name</returns>
-        void WriteDelegation<T>(T delegation, string destFolder);
+        void WriteDelegation<T>(List<T> delegationList, string destFolder);
 
         string BeforePrepareAndGetTempXlsx();
     }
