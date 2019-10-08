@@ -63,7 +63,7 @@ namespace DelegationExporter.Services
                 {
                     s89 = Config.S89J;
                     description = description + "日語-";
-                    delegation.Name.Replace("JP", "");
+                    delegation.Name = delegation.Name.Replace("JP", "");
                 }
                 WriteDelegationInLanguage(s89, delegation, destFolder, description);               
             }

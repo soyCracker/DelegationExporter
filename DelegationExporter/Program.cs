@@ -2,6 +2,7 @@
 using DelegationExporter.Services;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DelegationExporter
@@ -45,7 +46,9 @@ namespace DelegationExporter
             {
                 Directory.SetCurrentDirectory(Directory.GetCurrentDirectory() + "../../../../");
                 Console.WriteLine("work dir:"+Directory.GetCurrentDirectory() + "\n");
-            }                     
+            }
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Console.OutputEncoding = Encoding.Unicode;
         }
 
         public static void End()
