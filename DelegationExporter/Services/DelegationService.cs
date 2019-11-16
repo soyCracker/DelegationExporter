@@ -50,10 +50,6 @@ namespace DelegationExporter.Services
 
             List<S89Xlsx> list = delegationService.ReadDelegation<S89Xlsx>(tempXlsxFilePath);
 
-            /*foreach (S89Xlsx element in list)
-            {
-                delegationService.WriteDelegation(element, destFolder);
-            }*/
             delegationService.WriteDelegation(list, destFolder);
 
             AfterClear(tempXlsxFilePath);

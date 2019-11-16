@@ -18,7 +18,7 @@ namespace DelegationExporter.Services
     public class TwSongshanService : IDelegationService
     {
         private string tempDate = "";
-        private string tempXlsxFilePath = Config.FILE_FOLDER + "//" + Config.TEMP_NAME + ExternalConfig.Get().TargetXlsx;
+        //private string tempXlsxFilePath = Config.FILE_FOLDER + "//" + Config.TEMP_NAME + ExternalConfig.Get().TargetXlsx;
 
         public List<T> ReadDelegation<T>(string filePath)
         {
@@ -198,12 +198,22 @@ namespace DelegationExporter.Services
 
         public string BeforePrepareAndGetTempXlsx()
         {
-            if(File.Exists(tempXlsxFilePath))
+            List<string> fileList = FileUtil.GetFileList(Config.FILE_FOLDER);
+            string tempXls = "";
+            foreach(string file in fileList)
             {
-                File.Delete(tempXlsxFilePath);
+                if(file.ToLowerInvariant().EndsWith(".xls") || file.ToLowerInvariant().EndsWith(".xlsx"))
+                {
+                    if (File.Exists(file + Config.TEMP_NAME))
+                    {
+                        File.Delete(file + Config.TEMP_NAME);
+                    }
+                    FileUtil.CopyTemp(file, file + Config.TEMP_NAME);
+                    tempXls = file + Config.TEMP_NAME;
+                }
             }
-            FileUtil.CopyTemp(Config.FILE_FOLDER + "//" + ExternalConfig.Get().TargetXlsx, tempXlsxFilePath);
-            return tempXlsxFilePath;
+            Console.WriteLine("BeforePrepareAndGetTempXlsx() tempXls:" + tempXls + "\n");
+            return tempXls;         
         }
     }
 }

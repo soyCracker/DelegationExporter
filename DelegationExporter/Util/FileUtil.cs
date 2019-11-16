@@ -48,7 +48,7 @@ namespace DelegationExporter.Util
             {              
                 foreach (string f in Directory.GetFiles(dir))
                 {
-                    Console.WriteLine(f);
+                    //Console.WriteLine("FileUtil GetFileList() file:" + f);
                     files.Add(f);
                 }
             }
