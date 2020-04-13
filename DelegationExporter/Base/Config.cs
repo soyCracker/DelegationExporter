@@ -4,10 +4,10 @@ namespace DelegationExporter.Base
     public class Config
     {
         //process mode
-        public static bool RELEASE_MODE = true;
+        public static bool RELEASE_MODE = false;
 
         //program info
-        public static string VERSION = "1.0.3-20191116";
+        public static string VERSION = "1.0.4-20200413";
 
         //url
         public static string GIT_URL = "https://github.com/soyCracker/DelegationExporter/releases";
