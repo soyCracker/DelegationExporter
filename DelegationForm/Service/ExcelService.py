@@ -48,10 +48,10 @@ class ExcelService():
 
     def SetDelegationDict(self, date, delegation, name, assistant):
         delegationDict = dict()
-        delegationDict[Delegation.DictDate] = date
-        delegationDict[Delegation.DictDelegate] = delegation
-        delegationDict[Delegation.DcitName] = name
-        delegationDict[Delegation.DictAssistant] = assistant
+        delegationDict[Delegation.DictDate()] = date
+        delegationDict[Delegation.DictDelegate()] = delegation
+        delegationDict[Delegation.DcitName()] = name
+        delegationDict[Delegation.DictAssistant()] = assistant
         print(delegationDict)
         return delegationDict
 

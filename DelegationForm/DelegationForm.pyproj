@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9ab7af10-563b-4757-b05f-9ba65aa60d86</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Service\ExcelService.py</StartupFile>
+    <StartupFile>DelegationForm.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -34,6 +34,9 @@
     <Compile Include="Model\Delegation.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\S89PdfField.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Model\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -50,7 +53,11 @@
   <ItemGroup>
     <Folder Include="Base\" />
     <Folder Include="Model\" />
+    <Folder Include="Font\" />
     <Folder Include="Service\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Font\msjhbd.ttc" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

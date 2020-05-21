@@ -1,6 +1,7 @@
 from Base import Config
 from Base import Constant
 from Service.ExcelService import ExcelService
+from Service.PdfService import PdfService
 import os
 
 def Main():
@@ -18,7 +19,8 @@ def ReadFromExcel():
     return excelService.ReadDelegation()
 
 def WritePdf(xlsList):
-    print("")
+    pdfService = PdfService()
+    pdfService.Work(xlsList)
 
 
 def InitDir():
