@@ -36,24 +36,30 @@ class ExcelService():
         return self.xlsList
 
     def ReadOneClass(self, sheet, classInt):
-        nameCell = 2+(classInt-1)*2
-        assistantCell = 3+(classInt-1)*2
+        nameCell = classInt * 2 + 1
+        assistantCell = classInt * 2 + 2
         for row in range(5, sheet.api.UsedRange.Rows.count):
             if sheet.range(row, nameCell).value is None or sheet.range(row, nameCell).value == "":
                 continue
-            else:
-                if sheet.range(row, 1).value is not None or sheet.range(row, 1).value != "":
+            else:           
+                if sheet.range(row, 1).value is not None and sheet.range(row, 1).value != "":
                     self.delegateDate = sheet.range(row, 1).value
-                self.xlsList.append( self.SetDelegationDict(self.delegateDate, sheet.range(row, 2).value, sheet.range(row, nameCell).value, sheet.range(row, assistantCell).value) )               
+                self.xlsList.append( self.SetDelegationDict(self.delegateDate, sheet.range(row, 2).value, sheet.range(row, nameCell).value, sheet.range(row, assistantCell).value, classInt) )               
 
-    def SetDelegationDict(self, date, delegation, name, assistant):
+    def SetDelegationDict(self, date, delegation, name, assistant, delegateClass):
         delegationDict = dict()
         delegationDict[Delegation.DictDate()] = date
-        delegationDict[Delegation.DictDelegate()] = delegation
+        delegationDict[Delegation.DictDelegate()] = self.DelegationStrProcess(delegation)
         delegationDict[Delegation.DcitName()] = name
         delegationDict[Delegation.DictAssistant()] = assistant
+   
+        delegationDict[Delegation.DictClass()] = delegateClass
         print(delegationDict)
         return delegationDict
+
+    def DelegationStrProcess(self, delegation):
+        return delegation.replace('\u200b', "")
+     
 
     def GetInfo(self, sheet):
         print("GetInfo:\n")

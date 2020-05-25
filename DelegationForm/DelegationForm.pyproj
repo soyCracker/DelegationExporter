@@ -49,11 +49,18 @@
     <Compile Include="Service\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Util\TimeUtil.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Util\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Base\" />
     <Folder Include="Model\" />
     <Folder Include="Font\" />
+    <Folder Include="Util\" />
     <Folder Include="Service\" />
   </ItemGroup>
   <ItemGroup>

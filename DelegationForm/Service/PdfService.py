@@ -1,16 +1,25 @@
 from Base import Constant
 import os
 import pdfrw
+from Util import TimeUtil 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics,ttfonts
 from Model import Delegation
 
 class PdfService():
 
+    def __init__(self):
+        self.outputPath=""
+
     def Work(self, xlsList):
+        self.InitFolder()
         for delegationDict in xlsList:
             self.SetOverlay(delegationDict, self.InitCanvas())
-            self.MergePdf(Constant.GetS89CH(), Constant.GetXlsFolder() + "\\temp.pdf", Constant.GetOutputFolder() + "\\" + delegationDict[Delegation.DcitName()])
+            self.MergePdf(Constant.GetS89CH(), Constant.GetXlsFolder() + "\\temp.pdf", self.outputPath + "\\" + delegationDict[Delegation.DcitName()] + ".pdf")
+
+    def InitFolder(self):
+        self.outputPath = Constant.GetOutputFolder() + "\\" + TimeUtil.GetCurrentTime()
+        os.makedirs(self.outputPath)  
 
     def InitCanvas(self):
         pdfmetrics.registerFont (ttfonts.TTFont ('chinese', Constant.GetFont_msjhbd()))  # 註冊字型
@@ -21,12 +30,20 @@ class PdfService():
         return cv
 
     def SetOverlay(self, delegationDict, cv):
-        cv.drawString(115, 100, delegationDict[Delegation.DcitName()])
-        '''cv.drawString(115, 650, delegationDict[Delegation.DictDate()])
-        cv.drawString(115, 700, delegationDict[Delegation.DictDelegate()])
-        cv.drawString(115, 750, delegationDict[Delegation.DictAssistant()])
-        cv.drawString(115, 800, delegationDict[Delegation.DictClass()])'''
+        if delegationDict[Delegation.DcitName()]!=None:
+            cv.drawString(40, 280, delegationDict[Delegation.DcitName()])
+        if delegationDict[Delegation.DictDate()]!=None and delegationDict[Delegation.DictDelegate()]!=None:
+            cv.drawString(40, 230, delegationDict[Delegation.DictDate()] + " - " + delegationDict[Delegation.DictDelegate()])
+        if delegationDict[Delegation.DictAssistant()]!=None:
+            cv.drawString(40, 255, delegationDict[Delegation.DictAssistant()])
+        self.SetClass(delegationDict, cv)
         cv.save()
+
+    def SetClass(self, delegationDict, cv):
+        if delegationDict[Delegation.DictClass()]==1:
+            cv.drawString(15, 120, "V")
+        else:
+            cv.drawString(15, 105, "V")
 
     def MergePdf(self, form_pdf, overlay_pdf, output):
         """
