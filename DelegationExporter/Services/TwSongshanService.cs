@@ -145,10 +145,10 @@ namespace DelegationExporter.Services
                 PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FirstRV);
                 lastDelagation = S89chDelegationName.FirstRV;
             }
-            else if(delegation.Delegation.Contains(S89chDelegationName.FirstRV_same1))
+            else if(delegation.Delegation.Contains(S89chDelegationName.FirstRV2))
             {
                 PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FirstRV);
-                lastDelagation = S89chDelegationName.FirstRV_same1;
+                lastDelagation = S89chDelegationName.FirstRV2;
             }
             else if (delegation.Delegation.Contains(S89chDelegationName.SecondRV))
             {

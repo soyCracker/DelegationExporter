@@ -1,5 +1,6 @@
 from Base import Constant
 from Model import Delegation
+from Util import StringUtil
 import xlwings
 import os
 import shutil
@@ -9,16 +10,15 @@ class ExcelService():
     def __init__(self):
         self.xlsList=[]
         self.delegateDate=""
-
-    def SheetName(self):
-        return "Sheet1"
+        self.tempXls = Constant.GetXlsFolder() + "\\temp.xls"
+        self.sheetName = "Sheet1"
 
     def InitAndGetExcelFile(self):
-        if os.path.exists(Constant.GetXlsFolder() + "\\temp.xls"):
-            os.remove(Constant.GetXlsFolder() + "\\temp.xls")
+        if os.path.exists(self.tempXls):
+            os.remove(self.tempXls)
         xls = self.FindFirstExcel()
-        shutil.copy(Constant.GetXlsFolder() + "\\" + xls, Constant.GetXlsFolder() + "\\temp.xls")
-        return Constant.GetXlsFolder() + "\\temp.xls"
+        shutil.copy(Constant.GetXlsFolder() + "\\" + xls, self.tempXls)
+        return self.tempXls
 
     def FindFirstExcel(self):
         allFileList = os.listdir(Constant.GetXlsFolder())
@@ -29,7 +29,7 @@ class ExcelService():
 
     def ReadDelegation(self):
         workbook = xlwings.Book(self.InitAndGetExcelFile())
-        sheet = workbook.sheets[self.SheetName()]
+        sheet = workbook.sheets[self.sheetName]
         #print(sht.range(5,3).value)
         self.ReadOneClass(sheet, 1)
         self.ReadOneClass(sheet, 2)
@@ -48,11 +48,10 @@ class ExcelService():
 
     def SetDelegationDict(self, date, delegation, name, assistant, delegateClass):
         delegationDict = dict()
-        delegationDict[Delegation.DictDate()] = date
-        delegationDict[Delegation.DictDelegate()] = self.DelegationStrProcess(delegation)
-        delegationDict[Delegation.DcitName()] = name
-        delegationDict[Delegation.DictAssistant()] = assistant
-   
+        delegationDict[Delegation.DictDate()] = StringUtil.ClearSpace(date)
+        delegationDict[Delegation.DictDelegate()] = StringUtil.ClearSpace(delegation)
+        delegationDict[Delegation.DcitName()] = StringUtil.ClearSpace(name)
+        delegationDict[Delegation.DictAssistant()] = StringUtil.ClearSpace(assistant)  
         delegationDict[Delegation.DictClass()] = delegateClass
         print(delegationDict)
         return delegationDict
@@ -60,13 +59,8 @@ class ExcelService():
     def DelegationStrProcess(self, delegation):
         return delegation.replace('\u200b', "")
      
-
     def GetInfo(self, sheet):
         print("GetInfo:\n")
         print(sheet.api.UsedRange.Rows.count)
         print(sheet.api.UsedRange.Columns.count)
         print(sheet.used_range.shape)
-
-
-'''excelService =  ExcelService()
-excelService.ReadDelegation()'''

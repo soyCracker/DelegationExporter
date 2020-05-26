@@ -34,6 +34,9 @@
     <Compile Include="Model\Delegation.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\DelegationType.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Model\S89PdfField.py">
       <SubType>Code</SubType>
     </Compile>
@@ -47,6 +50,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Service\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Util\StringUtil.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Util\TimeUtil.py">

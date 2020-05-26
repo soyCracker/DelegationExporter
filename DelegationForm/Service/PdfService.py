@@ -5,45 +5,71 @@ from Util import TimeUtil
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics,ttfonts
 from Model import Delegation
+from Model import DelegationType
 
 class PdfService():
 
     def __init__(self):
-        self.outputPath=""
+        self.outputPath = Constant.GetOutputFolder() + "\\" + TimeUtil.GetCurrentTime()
+        self.tempPdf = Constant.GetXlsFolder() + "\\temp.pdf"
+        self.jpStr = "JP"
+        self.description = "傳道與生活聚會委派通知單-"
+        self.jpDescription = "日語-"
 
     def Work(self, xlsList):
         self.InitFolder()
         for delegationDict in xlsList:
             self.SetOverlay(delegationDict, self.InitCanvas())
-            self.MergePdf(Constant.GetS89CH(), Constant.GetXlsFolder() + "\\temp.pdf", self.outputPath + "\\" + delegationDict[Delegation.DcitName()] + ".pdf")
+            self.MergePdf(self.WhichS89(delegationDict), self.tempPdf, self.GetOutputPdfName(delegationDict))
 
     def InitFolder(self):
-        self.outputPath = Constant.GetOutputFolder() + "\\" + TimeUtil.GetCurrentTime()
         os.makedirs(self.outputPath)  
 
     def InitCanvas(self):
         pdfmetrics.registerFont (ttfonts.TTFont ('chinese', Constant.GetFont_msjhbd()))  # 註冊字型
-        if os.path.exists(Constant.GetXlsFolder() + "\\temp.pdf"):
-            os.remove(Constant.GetXlsFolder() + "\\temp.pdf")
-        cv = canvas.Canvas(Constant.GetXlsFolder() + "\\temp.pdf")
+        if os.path.exists(self.tempPdf):
+            os.remove(self.tempPdf)
+        cv = canvas.Canvas(self.tempPdf)
         cv.setFont ('chinese', 10)
         return cv
 
     def SetOverlay(self, delegationDict, cv):
         if delegationDict[Delegation.DcitName()]!=None:
-            cv.drawString(40, 280, delegationDict[Delegation.DcitName()])
+            cv.drawString(40, 280, delegationDict[Delegation.DcitName()].replace("JP", ""))
         if delegationDict[Delegation.DictDate()]!=None and delegationDict[Delegation.DictDelegate()]!=None:
             cv.drawString(40, 230, delegationDict[Delegation.DictDate()] + " - " + delegationDict[Delegation.DictDelegate()])
         if delegationDict[Delegation.DictAssistant()]!=None:
             cv.drawString(40, 255, delegationDict[Delegation.DictAssistant()])
-        self.SetClass(delegationDict, cv)
+        self.SetDelegationOverlay(delegationDict, cv)
+        self.SetClassOverlay(delegationDict, cv)
         cv.save()
 
-    def SetClass(self, delegationDict, cv):
+    def SetClassOverlay(self, delegationDict, cv):
         if delegationDict[Delegation.DictClass()]==1:
             cv.drawString(15, 120, "V")
         else:
             cv.drawString(15, 105, "V")
+
+    def SetDelegationOverlay(self, delegationDict, cv):
+        if delegationDict[Delegation.DictDelegate()].find(DelegationType.Reading())>=0:
+            cv.drawString(15, 190, "V")
+        elif delegationDict[Delegation.DictDelegate()].find(DelegationType.InitialCall())>=0:
+            cv.drawString(15, 175, "V")
+        elif delegationDict[Delegation.DictDelegate()].find(DelegationType.FirstRV())>=0:
+            cv.drawString(15, 160, "V")
+        elif delegationDict[Delegation.DictDelegate()].find(DelegationType.SecondRV())>=0:
+            cv.drawString(15, 150, "V")
+        elif delegationDict[Delegation.DictDelegate()].find(DelegationType.BibleStudy())>=0:
+            cv.drawString(110, 190, "V")
+        elif delegationDict[Delegation.DictDelegate()].find(DelegationType.BibleStudy2())>=0:
+            cv.drawString(110, 190, "V")
+        elif delegationDict[Delegation.DictDelegate()].find(DelegationType.Talk())>=0:
+            cv.drawString(110, 175, "V")
+        #續訪判斷放最後面
+        elif delegationDict[Delegation.DictDelegate()].find(DelegationType.FirstRV2())>=0:
+            cv.drawString(15, 160, "V")
+        else:
+            print("SetDelegationOverlay else")
 
     def MergePdf(self, form_pdf, overlay_pdf, output):
         """
@@ -61,5 +87,14 @@ class PdfService():
         writer = pdfrw.PdfWriter()
         writer.write(output, form)
 
-'''pdfService = PdfService()
-pdfService.OpenPdf(Constant.GetXlsFolder() + "\\temp")'''
+    def WhichS89(self, delegationDict):
+        if delegationDict[Delegation.DcitName()].find(self.jpStr)>=0:
+            return Constant.GetS89J()
+        else:
+            return Constant.GetS89CH()
+
+    def GetOutputPdfName(self, delegationDict):
+        if delegationDict[Delegation.DcitName()].find(self.jpStr)>=0:
+            return self.outputPath + "\\" + self.description + self.jpDescription + delegationDict[Delegation.DcitName()].replace(self.jpStr, "") + ".pdf"
+        else:
+            return self.outputPath + "\\" + self.description + delegationDict[Delegation.DcitName()] + ".pdf"
