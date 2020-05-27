@@ -7,7 +7,7 @@ namespace DelegationExporter.Base
         public static bool RELEASE_MODE = false;
 
         //program info
-        public static string VERSION = "1.0.4-20200413";
+        public static string VERSION = "1.0.5-20200527";
 
         //url
         public static string GIT_URL = "https://github.com/soyCracker/DelegationExporter/releases";

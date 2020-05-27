@@ -145,11 +145,6 @@ namespace DelegationExporter.Services
                 PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FirstRV);
                 lastDelagation = S89chDelegationName.FirstRV;
             }
-            else if(delegation.Delegation.Contains(S89chDelegationName.FirstRV2))
-            {
-                PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FirstRV);
-                lastDelagation = S89chDelegationName.FirstRV2;
-            }
             else if (delegation.Delegation.Contains(S89chDelegationName.SecondRV))
             {
                 PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.SecondRV);
@@ -169,6 +164,12 @@ namespace DelegationExporter.Services
             {
                 PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.Talk);
                 lastDelagation = S89chDelegationName.Talk;
+            }
+            //續訪擺在最後避免與第二次續訪衝突
+            else if (delegation.Delegation.Contains(S89chDelegationName.FirstRV2))
+            {
+                PdfUtil.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FirstRV);
+                lastDelagation = S89chDelegationName.FirstRV2;
             }
             else
             {
