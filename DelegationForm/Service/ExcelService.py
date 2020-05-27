@@ -30,7 +30,6 @@ class ExcelService():
     def ReadDelegation(self):
         workbook = xlwings.Book(self.InitAndGetExcelFile())
         sheet = workbook.sheets[self.sheetName]
-        #print(sht.range(5,3).value)
         self.ReadOneClass(sheet, 1)
         self.ReadOneClass(sheet, 2)
         return self.xlsList
@@ -55,9 +54,6 @@ class ExcelService():
         delegationDict[Delegation.DictClass()] = delegateClass
         print(delegationDict)
         return delegationDict
-
-    def DelegationStrProcess(self, delegation):
-        return delegation.replace('\u200b', "")
      
     def GetInfo(self, sheet):
         print("GetInfo:\n")

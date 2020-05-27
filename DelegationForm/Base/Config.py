@@ -1,5 +1,5 @@
 
 
 def GetVersion():
-    return "0.0.1-20200526"
+    return "1.0.0-20200527"
 

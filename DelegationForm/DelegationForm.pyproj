@@ -37,9 +37,6 @@
     <Compile Include="Model\DelegationType.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Model\S89PdfField.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Model\__init__.py">
       <SubType>Code</SubType>
     </Compile>
