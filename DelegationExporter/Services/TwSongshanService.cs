@@ -38,10 +38,12 @@ namespace DelegationExporter.Services
                 }
                 ISheet sheet = workbook.GetSheetAt(0);
                 List<S89Xlsx> s89List = new List<S89Xlsx>();
-                for (int i = 4; i <= sheet.LastRowNum; i++)
+                for(int j=1;j<=2;j++)
                 {
-                    SetXlsxList(sheet, i, s89List, 1);
-                    SetXlsxList(sheet, i, s89List, 2);
+                    for (int i = 4; i <= sheet.LastRowNum; i++)
+                    {
+                        SetXlsxList(sheet, i, s89List, j);
+                    }
                 }
                 workbook.Close();
                 fs.Close();

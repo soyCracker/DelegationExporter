@@ -23,4 +23,19 @@
     <Folder Include="Font\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="File\S-89-CH.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="File\S-89-J.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Font\msjhbd.ttc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
