@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegationExporter", "Deleg
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DelegationForm", "DelegationForm\DelegationForm.pyproj", "{9AB7AF10-563B-4757-B05F-9BA65AA60D86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegationExporterWeb", "DelegationExporterWeb\DelegationExporterWeb.csproj", "{831FB3D8-C279-43B2-8ED4-4C823BE5A621}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{E05DB385-FDDB-46AE-977E-749A16E72348}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9AB7AF10-563B-4757-B05F-9BA65AA60D86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9AB7AF10-563B-4757-B05F-9BA65AA60D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{831FB3D8-C279-43B2-8ED4-4C823BE5A621}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{831FB3D8-C279-43B2-8ED4-4C823BE5A621}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{831FB3D8-C279-43B2-8ED4-4C823BE5A621}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{831FB3D8-C279-43B2-8ED4-4C823BE5A621}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
