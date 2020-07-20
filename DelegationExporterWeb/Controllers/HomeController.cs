@@ -6,16 +6,21 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using DelegationExporterWeb.Models;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace DelegationExporterWeb.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly string _folder;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+            // 把上傳目錄設為：wwwroot\UploadFolder
+            _folder = $@"{env.WebRootPath}\UploadFolder";
         }
 
         public IActionResult Index()
@@ -32,6 +37,33 @@ namespace DelegationExporterWeb.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private readonly static Dictionary<string, string> _contentTypes = new Dictionary<string, string>
+        {
+            {".xls", "image/png"},
+            {".jpg", "image/jpeg"},
+        };
+        
+
+        [HttpPost]
+        public async Task<IActionResult> Upload(List<IFormFile> files)
+        {
+            var size = files.Sum(f => f.Length);
+
+            foreach (var file in files)
+            {
+                if (file.Length > 0)
+                {
+                    var path = $@"{_folder}\{file.FileName}";
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            return Ok(new { count = files.Count, size });
         }
     }
 }
