@@ -49,11 +49,12 @@ namespace DelegationExporterWeb.Controllers
             {
                 if (file.Length > 0)
                 {
-                    var path = $@"{_folder}\{file.FileName}";
+                    /*var path = $@"{_folder}\{file.FileName}";
                     using (var stream = new FileStream(path, FileMode.Create))
                     {
                         await file.CopyToAsync(stream).ConfigureAwait(false);
-                    }
+                    }*/
+
                 }
             }
 

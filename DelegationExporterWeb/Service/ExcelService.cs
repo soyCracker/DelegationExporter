@@ -1,4 +1,5 @@
 ﻿using DelegationExporterWeb.Models;
+using Microsoft.AspNetCore.Http;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -11,9 +12,9 @@ namespace DelegationExporterWeb.Service
 {
     public class ExcelService
     {
-        public List<DelegationModel> ReadDelegation()
+        public List<DelegationModel> ReadDelegation(IFormFile xlsFile)
         {
-            IWorkbook workbook = GetIWorkbook();
+            IWorkbook workbook = GetIWorkbook(xlsFile);
             for (int i=0;i<=2;i++)
             {
 
@@ -21,17 +22,18 @@ namespace DelegationExporterWeb.Service
             return null;
         }
 
-        private IWorkbook GetIWorkbook()
+        private IWorkbook GetIWorkbook(IFormFile xlsFile)
         {
-            FileStream fs = new FileStream("", FileMode.Open);
+            MemoryStream ms = new MemoryStream();
+            xlsFile.CopyToAsync(ms).ConfigureAwait(false);
             IWorkbook workbook;
             try
             {
-                workbook = new XSSFWorkbook(fs);
+                workbook = new XSSFWorkbook(ms);
             }
             catch (Exception)
             {
-                workbook = new HSSFWorkbook(fs);
+                workbook = new HSSFWorkbook(ms);
             }
             return workbook;
         }
