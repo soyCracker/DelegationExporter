@@ -9,6 +9,7 @@ using DelegationExporterWeb.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using DelegationExporterWeb.Service;
 
 namespace DelegationExporterWeb.Controllers
 {
@@ -16,12 +17,14 @@ namespace DelegationExporterWeb.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly string _folder;
+        private ExcelService excelService;
 
         public HomeController(ILogger<HomeController> logger, IWebHostEnvironment env)
         {
             _logger = logger;
             // 把上傳目錄設為：wwwroot\UploadFolder
             _folder = $@"{env.WebRootPath}";
+            excelService = new ExcelService();
         }
 
         public IActionResult Index()
@@ -41,7 +44,7 @@ namespace DelegationExporterWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload(List<IFormFile> files)
+        public IActionResult UploadXls(List<IFormFile> files)
         {
             var size = files.Sum(f => f.Length);
 
@@ -54,11 +57,18 @@ namespace DelegationExporterWeb.Controllers
                     {
                         await file.CopyToAsync(stream).ConfigureAwait(false);
                     }*/
-
+                    List<DelegationModel> delegationList = excelService.ReadDelegation(file);
+                    Debug.WriteLine("Delegation : " + delegationList[0].Name);
+                    return Ok(new { Delegation = delegationList[0].Name });
                 }
             }
+            return Ok(new { Delegation = "error" });
+        }
 
-            return Ok(new { count = files.Count, size });
+        [HttpPost]
+        public IActionResult Test()
+        {
+            return Ok(new { Value = "test" });
         }
     }
 }
