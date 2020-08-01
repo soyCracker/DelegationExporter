@@ -1,7 +1,5 @@
-﻿using System;
-using DelegationExporterEntity.Base;
+﻿using DelegationExporterEntity.Base;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DelegationExporterEntity.Entities
 {
@@ -23,7 +21,7 @@ namespace DelegationExporterEntity.Entities
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(Constant.DB_CONN);
+                optionsBuilder.UseSqlServer(Access.DB_CONN);
             }
         }
 

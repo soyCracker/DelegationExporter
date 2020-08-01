@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Api\" />
+    <ProjectReference Include="..\DelegationExporterEntity\DelegationExporterEntity.csproj" />
   </ItemGroup>
 
 </Project>

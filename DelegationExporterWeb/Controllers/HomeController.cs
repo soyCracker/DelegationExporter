@@ -17,14 +17,11 @@ namespace DelegationExporterWeb.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly string _folder;
-        private ExcelService excelService;
+        
 
-        public HomeController(ILogger<HomeController> logger, IWebHostEnvironment env)
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            // 把上傳目錄設為：wwwroot\UploadFolder
-            _folder = $@"{env.WebRootPath}";
-            excelService = new ExcelService();
         }
 
         public IActionResult Index()
@@ -41,29 +38,6 @@ namespace DelegationExporterWeb.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        [HttpPost]
-        public IActionResult UploadXls(List<IFormFile> files)
-        {
-            var size = files.Sum(f => f.Length);
-
-            foreach (var file in files)
-            {
-                if (file.Length > 0)
-                {
-                    List<DelegationModel> delegationList = excelService.ReadDelegation(file);
-                    
-                    return Ok(new { Delegation = delegationList[0].Name });
-                }
-            }
-            return Ok(new { Delegation = "error" });
-        }
-
-        [HttpPost]
-        public IActionResult Test()
-        {
-            return Ok(new { Value = "test" });
-        }
+        }           
     }
 }

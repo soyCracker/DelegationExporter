@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DelegationExporterEntity.Base;
+using DelegationExporterEntity.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +26,7 @@ namespace DelegationExporterWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddDbContext<DelegationExporterDBContext>(options => options.UseSqlServer(Access.DB_CONN));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
