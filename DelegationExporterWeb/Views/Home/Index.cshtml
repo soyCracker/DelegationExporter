@@ -8,36 +8,43 @@
 </head>
 
 <body>
-    <form method="post" enctype="multipart/form-data" action="/home/UploadXls">
-        <input type="file" name="files" multiple accept=".xls, .xlsx" />
-        <p>
-        <p>
-            <input type="submit" value="UploadXls" />
-    </form>
-    <p>
-        <div id="test_button">
-            <button v-on:click="test" type="button" class="btn btn-success">測試</button>
-        </div>
+    
+    <div id="upload_xls">
+        <input v-on:change="on_file_change" type="file" ref="file" multiple accept=".xls, .xlsx" />
+        </p>
+        <button v-on:click="upload_button" type="button" class="btn btn-success">上傳</button>
+    </div>
 
         <script>
             new Vue({
-                el: '#test_button',
+                el: '#upload_xls',
                 data:
                 {
-                    info: null
+                    file: ''                   
                 },
                 methods:
-                {
-                    test: function () {
+                {                   
+                    on_file_change: function ()
+                    {
+                        console.log('on_file_change')
+                        this.file = this.$refs.file.files[0];
+                    },
 
+                    upload_button: function ()
+                    {
                         console.log('click');
-                        axios
-                            .post(window.location.origin + "/home/test")
-                            .then(response => {
-                                this.info = response.data.value;
-                                console.log(this.info);
+                        let formData = new FormData();
+                        formData.append('files', this.file); //files為api之參數名稱
+                        axios.post("/home/UploadXls", formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                              })
+                            .then(function(result){
+                                console.log('Yes');
+                                console.log(result.data.delegation);
                             })
-                            .catch(function (error) { 
+                            .catch(function(error){ 
                                 console.log('NO');
                             });
                     }

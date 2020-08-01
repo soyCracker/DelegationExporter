@@ -52,13 +52,8 @@ namespace DelegationExporterWeb.Controllers
             {
                 if (file.Length > 0)
                 {
-                    /*var path = $@"{_folder}\{file.FileName}";
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream).ConfigureAwait(false);
-                    }*/
                     List<DelegationModel> delegationList = excelService.ReadDelegation(file);
-                    Debug.WriteLine("Delegation : " + delegationList[0].Name);
+                    
                     return Ok(new { Delegation = delegationList[0].Name });
                 }
             }
