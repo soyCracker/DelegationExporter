@@ -1,4 +1,9 @@
 ﻿using DelegationExporterEntity.Entities;
+using DelegationExporterWeb.Base;
+using DelegationExporterWeb.Models;
+using iText.Forms;
+using iText.Forms.Fields;
+using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -30,6 +35,32 @@ namespace DelegationExporterWeb.Service
                 context.NecessaryFile.Add(necessaryFile);
                 context.SaveChanges();
             }            
+        }
+
+        public void WriteInDelegation(List<DelegationModel> delegationList)
+        {
+            foreach(DelegationModel delegationModel in delegationList)
+            {
+                PdfDocument pdfDoc = new PdfDocument(new PdfReader(WhichS89(delegationModel)), new PdfWriter(""));
+                PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
+                IDictionary<string, PdfFormField> fields = form.GetFormFields();
+                //SetPdfField(fields, delegation, pdfDoc);
+                pdfDoc.Close();
+            }
+        }
+
+        public MemoryStream WhichS89(DelegationModel delegationModel)
+        {
+            NecessaryFile necessaryFile;
+            if (delegationModel.Name.Contains("J"))
+            {
+                necessaryFile = context.NecessaryFile.FirstOrDefault(x => x.FileName == Constant.S89J_FILE_NAME);
+            }
+            else
+            {
+                necessaryFile = context.NecessaryFile.FirstOrDefault(x => x.FileName == Constant.S89CH_FILE_NAME);
+            }
+            return new MemoryStream(necessaryFile.Data);           
         }
     }
 }
