@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Pdf Page";
+    ViewData["Title"] = "Upload Page";
 }
 <!DOCTYPE html>
 <html>
@@ -9,15 +9,15 @@
 
 <body>
 
-    <div id="upload_pdf">
-        <input v-on:change="on_file_change" type="file" ref="file" multiple accept=".pdf" />
+    <div id="upload">
+        <input v-on:change="on_file_change" type="file" ref="file" multiple accept=".*" />
         </p>
         <button v-on:click="upload_button" type="button" class="btn btn-success">上傳</button>
     </div>
 
     <script>
         new Vue({
-            el: '#upload_pdf',
+            el: '#upload',
             data:
             {
                 file: ''
@@ -32,8 +32,8 @@
                 upload_button: function () {
                     console.log('click');
                     let formData = new FormData();
-                    formData.append('pdf', this.file); //files為api之參數名稱
-                    axios.post("/api/File/UploadPdf", formData, {
+                    formData.append('file', this.file); //files為api之參數名稱
+                    axios.post("/api/File/UploadFile", formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }

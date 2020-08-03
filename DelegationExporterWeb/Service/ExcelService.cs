@@ -78,19 +78,19 @@ namespace DelegationExporterWeb.Service
                 delegationModel.DelegationClass = classInt.ToString();
                 try
                 {
-                    delegationModel.DelegationDate = sheet.GetRow(i).GetCell(0).ToString();
-                    if (string.IsNullOrEmpty(delegationModel.DelegationDate))
+                    delegationModel.Date = sheet.GetRow(i).GetCell(0).ToString();
+                    if (string.IsNullOrEmpty(delegationModel.Date))
                     {
-                        delegationModel.DelegationDate = blockDate;
+                        delegationModel.Date = blockDate;
                     }
                     else
                     {
-                        blockDate = delegationModel.DelegationDate;
+                        blockDate = delegationModel.Date;
                     }
                 }
                 catch (Exception)
                 {
-                    delegationModel.DelegationDate = blockDate;
+                    delegationModel.Date = blockDate;
                 }
                 tempList.Add(delegationModel);
             }

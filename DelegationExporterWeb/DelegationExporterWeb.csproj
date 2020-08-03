@@ -6,7 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.2" />
-    <PackageReference Include="itext7" Version="7.1.5" />
+    <PackageReference Include="itext7" Version="7.1.12" />
+    <PackageReference Include="itext7.font-asian" Version="7.1.12" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

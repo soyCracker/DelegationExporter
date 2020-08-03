@@ -34,20 +34,20 @@ namespace DelegationExporterWeb.Controllers.Api
                 if (file.Length > 0)
                 {
                     List<DelegationModel> delegationList = excelService.ReadDelegation(file);
-
-                    return Ok(new { Delegation = delegationList[0].Name });
+                    pdfServce.WriteInDelegation(delegationList);
+                    return Ok(new { Value = true, ErrorCode = 0 });
                 }
             }
-            return Ok(new { Delegation = "error" });
+            return Ok(new { Value = false, ErrorCode = 856 });
         }
 
-        /*[HttpPost("UploadPdf")]
+        /*[HttpPost("UploadFile")]
         [HttpPost]
-        public IActionResult UploadPdf(IFormFile pdf)
+        public IActionResult UploadFile(IFormFile file)
         {
-            if (pdf.Length > 0)
+            if (file.Length > 0)
             {
-                pdfServce.SavePdfToDB(pdf);
+                pdfServce.SaveFileToDB(file);
                 return Ok(new { Value = true, ErrorCode = 0 });
             }
             return Ok(new { Value = false, ErrorCode = 856 });
