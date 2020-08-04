@@ -19,10 +19,8 @@ namespace DelegationExporterWeb.Util
     {
 
         //微軟正黑體 itext 7.1.5修改字體功能正常
-        public static PdfFont GetMsjhbdFont(DelegationExporterDBContext context)
+        /*public static PdfFont GetMsjhbdFont(DelegationExporterDBContext context)
         {
-            /*string path = System.IO.Path.Combine(Config.FONT_FOLDER, "msjhbd.ttc,0");           
-            return PdfFontFactory.CreateFont("", PdfEncodings.IDENTITY_H, true);*/
             NecessaryFile necessaryFile = context.NecessaryFile.FirstOrDefault(x => x.FileName == Constant.MSJHBD_TTC);
             return PdfFontFactory.CreateTtcFont(necessaryFile.Data, 0, PdfEncodings.IDENTITY_H, true, false);
         }
@@ -70,6 +68,6 @@ namespace DelegationExporterWeb.Util
                 canvas.Close();
                 page.RemoveAnnotation(annotation);
             }
-        }
+        }*/
     }
 }

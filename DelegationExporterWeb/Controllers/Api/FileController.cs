@@ -25,18 +25,13 @@ namespace DelegationExporterWeb.Controllers.Api
 
         [HttpPost("UploadXls")]
         [HttpPost]
-        public IActionResult UploadXls(List<IFormFile> files)
+        public IActionResult UploadXls(IFormFile file)
         {
-            var size = files.Sum(f => f.Length);
-
-            foreach (var file in files)
+            if (file.Length > 0)
             {
-                if (file.Length > 0)
-                {
-                    List<DelegationModel> delegationList = excelService.ReadDelegation(file);
-                    pdfServce.WriteInDelegation(delegationList);
-                    return Ok(new { Value = true, ErrorCode = 0 });
-                }
+                List<DelegationModel> delegationList = excelService.ReadDelegation(file);
+                pdfServce.WriteInDelegation(delegationList);
+                return Ok(new { Value = true, ErrorCode = delegationList.Count });
             }
             return Ok(new { Value = false, ErrorCode = 856 });
         }

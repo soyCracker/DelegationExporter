@@ -37,11 +37,9 @@ namespace DelegationExporterWeb.Util
                 {
                     if (!target.Contains(c))
                     {
-                        //Console.WriteLine("false:"+c);
                         return false;
                     }
                 }
-                //Console.WriteLine("true");
                 return true;
             }
             catch (Exception ex)

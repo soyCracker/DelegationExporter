@@ -34,7 +34,7 @@
                     {
                         console.log('click');
                         let formData = new FormData();
-                        formData.append('files', this.file); //files為api之參數名稱
+                        formData.append('file', this.file); //files為api之參數名稱
                         axios.post("/api/File/UploadXls", formData, {
                                 headers: {
                                     'Content-Type': 'multipart/form-data'
@@ -42,7 +42,7 @@
                               })
                             .then(function(result){
                                 console.log('Yes');
-                                console.log(result.data.delegation);
+                                console.log(result.data.value + ' ' + result.data.errorCode);
                             })
                             .catch(function(error){ 
                                 console.log('NO');
