@@ -23,30 +23,15 @@ namespace DelegationExporterWeb.Service
 {
     public class PdfServce
     {
-        private DelegationExporterDBContext context;
+        private NecessaryFileService necessaryFileService;
         private int sameSubjectCount = 0;
         private string previousDate = "";
         private string previousSubject = "";
 
         public PdfServce(DelegationExporterDBContext context)
         {
-            this.context = context;
-        }
-
-        public void SaveFileToDB(IFormFile file)
-        {       
-            using (var ms = new MemoryStream())
-            {
-                file.CopyTo(ms);
-                byte[] byteFile = ms.ToArray();
-                NecessaryFile necessaryFile = new NecessaryFile();
-                necessaryFile.FileName = file.FileName;
-                necessaryFile.Data = byteFile;
-                necessaryFile.UpdateTime = DateTime.UtcNow;
-                context.NecessaryFile.Add(necessaryFile);
-                context.SaveChanges();
-            }            
-        }
+            necessaryFileService = new NecessaryFileService(context);
+        }     
 
         public void WriteInDelegation(List<DelegationModel> delegationList)
         {
@@ -64,26 +49,9 @@ namespace DelegationExporterWeb.Service
         {
             if (delegationModel.Name.Contains(Constant.J_STR))
             {
-                return new MemoryStream(GetNecessaryFileData(Constant.S89J_FILE_NAME));
+                return new MemoryStream(necessaryFileService.GetNecessaryFileData(Constant.S89J_FILE_NAME));
             }
-            return new MemoryStream(GetNecessaryFileData(Constant.S89CH_FILE_NAME));
-        }
-
-        private byte[] GetNecessaryFileData(string fileName)
-        {
-            using (var tryLock = new CacheLock())
-            {
-                if (CacheUtil.GetCache(fileName) != null)
-                {
-                    return (byte[])CacheUtil.GetCache(fileName);
-                }
-                else
-                {
-                    byte[] otaFile = context.NecessaryFile.FirstOrDefault(x => x.FileName == fileName).Data;
-                    CacheUtil.SetCache(fileName, otaFile);
-                    return otaFile;
-                }
-            }
+            return new MemoryStream(necessaryFileService.GetNecessaryFileData(Constant.S89CH_FILE_NAME));
         }
 
         private string GetPdfFileName(string name)
@@ -96,9 +64,9 @@ namespace DelegationExporterWeb.Service
         private void SetPdfField(IDictionary<string, PdfFormField> fields, DelegationModel delegation, PdfDocument pdfDoc)
         {
             //我她X的，SetFont要在SetValue之前
-            SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.NAME, delegation.Name.Replace(Constant.J_STR, ""), context);
+            SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.NAME, delegation.Name.Replace(Constant.J_STR, ""));
 
-            SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.ASSISTANT, delegation.Assistant, context);
+            SetPdfFeldValueCenter(fields, pdfDoc, S89PdfField.ASSISTANT, delegation.Assistant);
 
             SetPdfFieldTitle(fields, delegation, pdfDoc);
 
@@ -113,12 +81,12 @@ namespace DelegationExporterWeb.Service
             {
                 sameSubjectCount++;
                 SetPdfFeldValueSmall(fields, pdfDoc, S89PdfField.DATE, delegation.Date + "-" + 
-                    delegation.Subject.Replace(delegation.Subject, delegation.Subject + "-" + sameSubjectCount), context);
+                    delegation.Subject.Replace(delegation.Subject, delegation.Subject + "-" + sameSubjectCount));
             }
             else
             {
                 sameSubjectCount = 1;
-                SetPdfFeldValueSmall(fields, pdfDoc, S89PdfField.DATE, delegation.Date + "-" + delegation.Subject, context);
+                SetPdfFeldValueSmall(fields, pdfDoc, S89PdfField.DATE, delegation.Date + "-" + delegation.Subject);
             }
             previousDate = delegation.Date;
         }
@@ -127,49 +95,49 @@ namespace DelegationExporterWeb.Service
         {
             if (delegation.Subject.Contains(DelegationType.READING))
             {
-                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.READING, context);
+                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.READING);
                 previousSubject = DelegationType.READING;
             }
             else if (delegation.Subject.Contains(DelegationType.INITIAL_CALL))
             {
-                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.INITIAL_CALL, context);
+                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.INITIAL_CALL);
                 previousSubject = DelegationType.INITIAL_CALL;
             }
             else if (delegation.Subject.Contains(DelegationType.FIRST_RV))
             {
-                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FIRST_RV, context);
+                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FIRST_RV);
                 previousSubject = DelegationType.FIRST_RV;
             }
             else if (delegation.Subject.Contains(DelegationType.SECOND_RV))
             {
-                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.SECOND_RV, context);
+                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.SECOND_RV);
                 previousSubject = DelegationType.SECOND_RV;
             }
             else if (delegation.Subject.Contains(DelegationType.BIBLE_STUDY))
             {
-                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.BIBLE_STUDY, context);
+                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.BIBLE_STUDY);
                 previousSubject = DelegationType.BIBLE_STUDY;
             }
             else if (delegation.Subject.Contains(DelegationType.BIBLE_STUDY2))
             {
-                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.BIBLE_STUDY, context);
+                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.BIBLE_STUDY);
                 previousSubject = DelegationType.BIBLE_STUDY2;
             }
             else if (delegation.Subject.Contains(DelegationType.TALK))
             {
-                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.TALK, context);
+                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.TALK);
                 previousSubject = DelegationType.TALK;
             }
             //續訪擺在最後避免與第二次續訪衝突
             else if (delegation.Subject.Contains(DelegationType.FIRST_RV2))
             {
-                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FIRST_RV, context);
+                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.FIRST_RV);
                 previousSubject = DelegationType.FIRST_RV2;
             }
             else
             {
-                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.OTHER, context);
-                SetPdfFeldValueSmall(fields, pdfDoc, S89PdfField.OTHER_TEXT, delegation.Subject.Split('(')[0], context);
+                SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.OTHER);
+                SetPdfFeldValueSmall(fields, pdfDoc, S89PdfField.OTHER_TEXT, delegation.Subject.Split('(')[0]);
             }
         }
 
@@ -178,10 +146,10 @@ namespace DelegationExporterWeb.Service
             switch (delegation.DelegationClass)
             {
                 case "1":
-                    SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.CLASS1, context);
+                    SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.CLASS1);
                     break;
                 case "2":
-                    SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.CLASS2, context);
+                    SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.CLASS2);
                     break;
                 default:
                     Console.WriteLine("班別填錯了吧\n");
@@ -191,10 +159,10 @@ namespace DelegationExporterWeb.Service
 
         private PdfFont GetMsjhbdFont()
         {           
-            return PdfFontFactory.CreateTtcFont(GetNecessaryFileData(Constant.MSJHBD_TTC), 0, PdfEncodings.IDENTITY_H, true, false);
+            return PdfFontFactory.CreateTtcFont(necessaryFileService.GetNecessaryFileData(Constant.MSJHBD_TTC), 0, PdfEncodings.IDENTITY_H, true, false);
         }
 
-        private void SetPdfCheckBoxSelected(IDictionary<string, PdfFormField> fields, PdfDocument pdfDoc, string fieldsKey, DelegationExporterDBContext context)
+        private void SetPdfCheckBoxSelected(IDictionary<string, PdfFormField> fields, PdfDocument pdfDoc, string fieldsKey)
         {
             foreach (PdfAnnotation annotation in fields[fieldsKey].GetWidgets())
             {
@@ -209,7 +177,7 @@ namespace DelegationExporterWeb.Service
             }
         }
 
-        private void SetPdfFeldValueCenter(IDictionary<string, PdfFormField> fields, PdfDocument pdfDoc, string fieldsKey, string content, DelegationExporterDBContext context)
+        private void SetPdfFeldValueCenter(IDictionary<string, PdfFormField> fields, PdfDocument pdfDoc, string fieldsKey, string content)
         {
             foreach (PdfAnnotation annotation in fields[fieldsKey].GetWidgets())
             {
@@ -224,7 +192,7 @@ namespace DelegationExporterWeb.Service
             }
         }
 
-        private  void SetPdfFeldValueSmall(IDictionary<string, PdfFormField> fields, PdfDocument pdfDoc, string fieldsKey, string content, DelegationExporterDBContext context)
+        private  void SetPdfFeldValueSmall(IDictionary<string, PdfFormField> fields, PdfDocument pdfDoc, string fieldsKey, string content)
         {
             foreach (PdfAnnotation annotation in fields[fieldsKey].GetWidgets())
             {

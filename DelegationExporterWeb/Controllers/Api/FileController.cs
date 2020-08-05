@@ -16,16 +16,18 @@ namespace DelegationExporterWeb.Controllers.Api
     {
         private ExcelService excelService;
         private PdfServce pdfServce;
+        private NecessaryFileService necessaryFileService;
 
         public FileController(DelegationExporterDBContext context)
         {
             excelService = new ExcelService();
             pdfServce = new PdfServce(context);
+            necessaryFileService = new NecessaryFileService(context);
         }
 
-        [HttpPost("UploadXls")]
+        [HttpPost("GetDelegation")]
         [HttpPost]
-        public IActionResult UploadXls(IFormFile file)
+        public IActionResult GetDelegation(IFormFile file)
         {
             if (file.Length > 0)
             {
@@ -42,7 +44,7 @@ namespace DelegationExporterWeb.Controllers.Api
         {
             if (file.Length > 0)
             {
-                pdfServce.SaveFileToDB(file);
+                necessaryFileService.SaveFileToDB(file);
                 return Ok(new { Value = true, ErrorCode = 0 });
             }
             return Ok(new { Value = false, ErrorCode = 856 });
