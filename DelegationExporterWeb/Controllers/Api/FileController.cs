@@ -56,5 +56,38 @@ namespace DelegationExporterWeb.Controllers.Api
         {
             return Ok(new { Value = true });
         }
+
+        [HttpPost("GetData")]
+        [HttpPost]
+        public IActionResult GetData()
+        {
+            List<TableModel> list = new List<TableModel>();
+            TableModel table1 = new TableModel
+            {
+                Name = "Lai",
+                Age = 25,
+                Money = 100
+            };
+
+            TableModel table2 = new TableModel
+            {
+                Name = "Fen",
+                Age = 30,
+                Money = 120
+            };
+
+            TableModel table3 = new TableModel
+            {
+                Name = "Yu",
+                Age = 27,
+                Money = 95
+            };
+
+            list.Add(table1);
+            list.Add(table2);
+            list.Add(table3);
+
+            return Ok(new { Value = true, Response = list });
+        }
     }
 }
