@@ -28,7 +28,7 @@
             </ul>
         </div>
     </div>
-    
+
 
     <script>
         console.log("123456");
@@ -40,21 +40,20 @@
 
                 test: '777777',
                 member: ['Adam', 'Jack', 'Candy', 'Louis', 'Lurry'],
-                list: [{ name: 'a', money: 1, age:12},
-                    { name: 'b', money: 5, age: 25 }
+                list: [{ name: 'a', money: 1, age: 12 },
+                { name: 'b', money: 5, age: 25 }
                 ],
-                
+
             },
             methods:
             {
 
-                click_button: function ()
-                {
+                click_button: function () {
                     var self = this;
                     console.log(this.test);
-                    self.test='123456798'
-                    
-                    axios.post('/api/File/GetData')
+                    self.test = '123456798'
+
+                    /*axios.post('/api/File/GetData')
                         .then(function (response) {
                             self.list = response.data.response;
                             console.log('get');
@@ -65,12 +64,27 @@
                         })
                         .catch(function (error) {
                             console.log(error);
-                        });
+                        });*/
                 },
+            },
+            mounted: function () {
+                var self = this;
+                console.log('FIRST');
+                axios.post('/api/File/GetData')
+                    .then(function (response) {
+                        self.list = response.data.response;
+                        console.log('get');
+                        console.log(response.data.response[0].name);
+                        self.test = response.data.response[0].name;
+                        console.log(self.test);
 
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             }
-        })
-        
+        });
+
     </script>
 </body>
 </html>
