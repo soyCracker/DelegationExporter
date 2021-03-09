@@ -25,10 +25,9 @@ namespace DelegationExporter
 
         public static void PrintInfo()
         {
-            Console.WriteLine("Version:" + Config.VERSION + "\n");
-            Console.WriteLine("Release Mode:" + Config.RELEASE_MODE + "\n");
-            Console.WriteLine("Work Mode:" + ExternalConfig.Get().WorkMode + "\n");
-            Console.WriteLine("Update Web url:" + Config.GIT_URL + "\n");
+            Console.WriteLine("Version:" + Constant.VERSION + "\n");
+            Console.WriteLine("Release Mode:" + Constant.RELEASE_MODE + "\n");
+            Console.WriteLine("Update Web url:" + Constant.GIT_URL + "\n");
         }
 
         public static void Work()
@@ -42,7 +41,7 @@ namespace DelegationExporter
 
         public static void InitEnvironment()
         {
-            if(!Config.RELEASE_MODE)
+            if(!Constant.RELEASE_MODE)
             {
                 Directory.SetCurrentDirectory(Directory.GetCurrentDirectory() + "../../../../");
                 Console.WriteLine("work dir:"+Directory.GetCurrentDirectory() + "\n");

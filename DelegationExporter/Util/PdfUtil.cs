@@ -25,13 +25,13 @@ namespace DelegationExporter.Util
         //微軟正黑體 itext 7.1.5修改字體功能正常
         public static PdfFont GetMsjhbdFont()
         {         
-            string path = System.IO.Path.Combine(Config.FONT_FOLDER, "msjhbd.ttc,0");
+            string path = System.IO.Path.Combine(Constant.FONT_FOLDER, "msjhbd.ttc,0");
             return PdfFontFactory.CreateFont(path, PdfEncodings.IDENTITY_H, true);
         }
 
         public static bool IsMsjhbdExist()
         {
-            if(File.Exists(System.IO.Path.Combine(Config.FONT_FOLDER, "msjhbd.ttc")))
+            if(File.Exists(System.IO.Path.Combine(Constant.FONT_FOLDER, "msjhbd.ttc")))
             {
                 return true;
             }

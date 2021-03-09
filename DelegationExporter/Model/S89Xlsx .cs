@@ -7,7 +7,7 @@ namespace DelegationExporter.Model
 
         public string Assistant { get; set; }
 
-        public string Delegation { get; set; }
+        public string Header { get; set; }
 
         public string Class { get; set; }
 

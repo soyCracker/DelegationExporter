@@ -34,11 +34,11 @@ namespace DelegationExporter.Util
 
         public static string GetOutputFolder()
         {
-            if (!Directory.Exists(Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow()))
+            if (!Directory.Exists(Constant.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow()))
             {
-                Directory.CreateDirectory(Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow());
+                Directory.CreateDirectory(Constant.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow());
             }
-            return Config.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow();
+            return Constant.OUTPUT_FOLDER + "//" + TimeUtil.GetTimeNow();
         }
 
         public static List<string> GetFileList(string dir)

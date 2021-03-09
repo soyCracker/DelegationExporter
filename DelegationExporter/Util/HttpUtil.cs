@@ -15,7 +15,7 @@ namespace DelegationExporter.Util
         {
             try
             {
-                httpClient.DefaultRequestHeaders.Add("User-Agent", "DelegationExporter " + Config.VERSION);
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "DelegationExporter " + Constant.VERSION);
                 HttpResponseMessage data = await httpClient.GetAsync(url);
                 return await data.Content.ReadAsStringAsync();
             }

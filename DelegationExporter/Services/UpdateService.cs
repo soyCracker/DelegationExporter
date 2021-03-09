@@ -15,7 +15,7 @@ namespace DelegationExporter.Services
         {
             try
             {
-                string res = await HttpUtil.Get(Config.GIT_RELEASE_API);
+                string res = await HttpUtil.Get(Constant.GIT_RELEASE_API);
                 Console.WriteLine("res:" + res);
                 List<GithubReleaseRes> releaseVers = JsonConvert.DeserializeObject<List<GithubReleaseRes>>(res);
                 foreach (GithubReleaseRes release in releaseVers)
