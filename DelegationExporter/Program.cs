@@ -9,25 +9,23 @@ namespace DelegationExporter
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            //UpdateService updater = new UpdateService();
-            //await updater.IsNewVer();
+            await PrintInfo();
 
             InitEnvironment();
-
-            PrintInfo();
 
             Work();
 
             End();
         }
 
-        public static void PrintInfo()
+        public async static Task PrintInfo()
         {
+            UpdateService updater = new UpdateService();
+            Console.WriteLine("The Latest Version: " + await updater.GetLatestVerInfo(Constant.GIT_RELEASE_API) + "\n");
             Console.WriteLine("Version:" + Constant.VERSION + "\n");
             Console.WriteLine("Release Mode:" + Constant.RELEASE_MODE + "\n");
-            Console.WriteLine("Update Web url:" + Constant.GIT_URL + "\n");
         }
 
         public static void Work()
@@ -36,7 +34,7 @@ namespace DelegationExporter
             DelegationService delegationService = new DelegationService();
             delegationService.Start();
             Console.WriteLine("-------------------------------\n");
-            Console.WriteLine("Work End!!\n");
+            Console.WriteLine("Work Finish!\n");
         }
 
         public static void InitEnvironment()

@@ -126,9 +126,11 @@ namespace DelegationExporter.Services
 
         private void WriteInPdf(string s89, S89Xlsx delegation, string destFolder, string description)
         {
-            using (FileStream fs = new FileStream(Constant.FILE_FOLDER + "//" + s89, FileMode.Open))
+            using (FileStream fs = new FileStream(Path.Combine(Constant.FILE_FOLDER, s89), FileMode.Open))
             {
-                PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), new PdfWriter(PdfUtil.FileNameExistAddR(destFolder + "//" + description + delegation.Name + Constant.PDF_FILE_NAME_EXTENSION)));
+                PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), 
+                    new PdfWriter(PdfUtil.FileNameExistAddR(Path.Combine(destFolder, 
+                    description + delegation.Name + Constant.PDF_FILE_NAME_EXTENSION))));
                 PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
                 IDictionary<string, PdfFormField> fields = form.GetFormFields();
                 SetPdfField(fields, delegation, pdfDoc);
