@@ -7,7 +7,7 @@ namespace DelegationExporter.Base
         public static readonly bool RELEASE_MODE = true;
 
         //program info
-        public static readonly string VERSION = "1.0.6-20210606";
+        public static readonly string VERSION = "1.0.6-20210822";
 
         //url
         public static readonly string GIT_URL = "https://github.com/soyCracker/DelegationExporter/releases";
@@ -27,7 +27,7 @@ namespace DelegationExporter.Base
         public static readonly string S89J = "S-89-J.pdf";
 
         //others
-        public static readonly string DESCRIP_STR = "傳道與生活聚會委派通知單-";
+        public static readonly string DESCRIP_STR = "委派單-";
         public static readonly string DISTINT_JP_STR = "JP";
         public static readonly string DESCRIP_JP_STR = "日語-";
     }

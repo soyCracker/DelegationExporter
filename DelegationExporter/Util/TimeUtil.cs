@@ -10,5 +10,10 @@ namespace DelegationExporter.Util
         {
             return DateTime.Now.ToString("yyyyMMddHHmmss");
         }
+
+        public static string CovertDateToFileNameStr(string dateStr)
+        {
+            return DateTime.Parse(dateStr).ToString("yyyyMMdd");
+        }
     }
 }
