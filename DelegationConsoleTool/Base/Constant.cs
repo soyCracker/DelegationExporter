@@ -20,7 +20,7 @@ namespace DelegationConsoleTool.Base
         public static readonly string ASSIGNMENT_FOLDER = "Assignment";
         public static readonly string OUTPUT_FOLDER = "Export";
         public static readonly string FONT_FOLDER = "Font";
-        public static readonly string TEMP_NAME = "TEMPX";
+        //public static readonly string TEMP_NAME = "TEMPX";
         public static readonly string PDF_FILE_NAME_EXTENSION = ".pdf";
         public static readonly string XLS_FILE_NAME_EXTENSION = ".xls";
         public static readonly string XLSX_FILE_NAME_EXTENSION = ".xls";

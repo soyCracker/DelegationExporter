@@ -15,20 +15,18 @@ namespace Delegation.Service.Services
 
         }
 
-        public void Start(string outputFolder, string formFileFolder, string tempName, string assignFileFolder)
+        public void Start(string outputFolder, string formFile, string assignFile)
         {
             string destFolder = SetAndGetFolder(outputFolder);
 
-            string tempXlsxFilePath = PrepareAndGetTempXlsx(formFileFolder, tempName);
-
-            List<DelegationVM> vmList = ReadDelegation(tempXlsxFilePath);
+            List<DelegationVM> vmList = ReadDelegation(formFile);
 
             foreach (DelegationVM vm in vmList)
             {
                 Console.WriteLine("test " + vm.Name);
             }
 
-            Record(vmList, GetAssignXlsx(assignFileFolder), destFolder);
+            Record(vmList, assignFile, destFolder);
         }
 
         private string SetAndGetFolder(string outputFolder)
@@ -38,25 +36,6 @@ namespace Delegation.Service.Services
                 Directory.CreateDirectory(outputFolder + "//" + TimeUtil.GetTimeNow());
             }
             return outputFolder + "//" + TimeUtil.GetTimeNow();
-        }
-
-        private string PrepareAndGetTempXlsx(string fileFolder, string tempName)
-        {
-            string[] files = Directory.GetFiles(fileFolder).Where(f=>f.EndsWith(".xls")||f.EndsWith(".xlsx")).ToArray();
-            if(files.Length>1)
-            {
-                Console.WriteLine("PrepareAndGetTempXlsx() MultipleXlsException\n");
-                //throw new MultipleXlsException();
-            }
-            string file = files[0];
-            string tempXls = file + tempName;
-            if (File.Exists(tempXls))
-            {
-                File.Delete(tempXls);
-            }
-            File.Copy(file, tempXls);
-            Console.WriteLine("PrepareAndGetTempXlsx() tempXls:" + tempXls + "\n");
-            return tempXls;
         }
 
         public List<DelegationVM> ReadDelegation(string filePath)
@@ -134,13 +113,6 @@ namespace Delegation.Service.Services
                 vm.Date = blockDate;
             }
             vmList.Add(vm);
-        }
-
-        private string GetAssignXlsx(string fileFolder)
-        {
-            string[] files = Directory.GetFiles(fileFolder).Where(f => f.EndsWith(".xls")||f.EndsWith(".xlsx")).ToArray();
-            string file = files[0];
-            return file;
         }
 
         private void Record(List<DelegationVM> vmList, string assignFilePath, string destFolder)

@@ -1,9 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Delegation.Service.Services;
 using DelegationConsoleTool.Base;
+using DelegationConsoleTool.Kits;
 using System.Text;
 
-InitEnvironment();
+EnvirKit envirKit = new EnvirKit();
+envirKit.InitEnvironment();
 string delegationFormFolder = Constant.FILE_FOLDER + @"\" + Constant.DELEGATION_FORM_FOLDER;
 string assignmentFolder = Constant.FILE_FOLDER + @"\" + Constant.ASSIGNMENT_FOLDER;
 
@@ -19,17 +21,5 @@ if (funKey=="1")
 {
     Console.WriteLine("委派紀錄填寫");
     RecordService recordService = new RecordService();
-    recordService.Start(Constant.OUTPUT_FOLDER, delegationFormFolder, Constant.TEMP_NAME, assignmentFolder);
-}
-
-
-static void InitEnvironment()
-{
-    if (!Constant.RELEASE_MODE)
-    {
-        Directory.SetCurrentDirectory(Directory.GetCurrentDirectory() + "../../../../");
-        Console.WriteLine("work dir:"+Directory.GetCurrentDirectory() + "\n");
-    }
-    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-    Console.OutputEncoding = Encoding.Unicode;
+    recordService.Start(Constant.OUTPUT_FOLDER, envirKit.PrepareAndGetTempXlsx(delegationFormFolder), envirKit.GetAssignRecordXlsx(assignmentFolder));
 }
