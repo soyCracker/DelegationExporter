@@ -12,8 +12,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="File\DelegationForm\" />
-    <Folder Include="File\Assignment\" />
+    <None Update="File\Assignment\TextFile1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="File\DelegationForm\TextFile1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Font\msjhbd.ttc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
