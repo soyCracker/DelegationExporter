@@ -55,7 +55,7 @@ void ExportWork()
     try
     {
         Console.WriteLine("輸出委派單");
-        ExportService exportService = new ExportService(Constant.FONT_FOLDER);
+        ExportService exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
         exportService.Start(Constant.OUTPUT_FOLDER, envirKit.PrepareAndGetTempXlsx(delegationFormFolder), s89chFile,
             s89jpFile, Constant.DESC_STR, Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
     }

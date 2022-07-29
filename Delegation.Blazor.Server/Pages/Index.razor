@@ -1,0 +1,80 @@
+﻿@page "/"
+@using System
+@using System.IO
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Logging
+@using Delegation.Blazor.Server.Base
+@inject ILogger<Index> logger
+@inject IWebHostEnvironment Environment
+
+
+<PageTitle>Delegation Tool</PageTitle>
+
+<InputFile id="fileInput" OnChange="@UploadFile" hidden></InputFile>
+
+<MudButton HtmlTag="label"
+           Variant="Variant.Filled"
+           Color="Color.Primary"
+           StartIcon="@Icons.Filled.CloudUpload"
+           for="fileInput">
+    選擇檔案
+</MudButton>
+
+@if (isUploading)
+{
+    <p>Uploading...</p>
+}
+else if (uploadFile != null)
+{
+    <ul>
+        <li>
+            <ul>
+                <li>Name: @uploadFile.Name</li>
+                <li>Last modified: @uploadFile.LastModified.ToString()</li>
+                <li>Size (bytes): @uploadFile.Size</li>
+                <li>Content type: @uploadFile.ContentType</li>
+
+            </ul>
+        </li>
+    </ul>
+}
+
+@code {
+    //private long maxFileSize = 1024 * 15;
+    private bool isUploading = false;
+    private IBrowserFile uploadFile = null;
+
+    public Index()
+    {
+
+    }
+
+    private async Task UploadFile(InputFileChangeEventArgs e)
+    {
+        isUploading = true;
+        try
+        {
+            uploadFile = e.File;
+            //var trustedFileNameForFileStorage = Path.GetRandomFileName();
+            //string uploadFileFolder = Path.Combine(Environment.ContentRootPath, Constant.UPLOAD_FILE_FOLDER);
+
+            //if (!File.Exists(uploadFileFolder))
+            //{
+            //    Directory.CreateDirectory(uploadFileFolder);
+            //}
+            //var path = Path.Combine(uploadFileFolder, trustedFileNameForFileStorage);
+            //logger.LogInformation("上傳檔案路徑:" + path);
+
+            await using MemoryStream ms = new MemoryStream();
+            await e.File.OpenReadStream().CopyToAsync(ms);
+            
+            logger.LogInformation("測試memorystream: " + ms.Length);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("File: {Filename} Error: {Error}",
+                e.File.Name, ex.Message);
+        }
+        isUploading = false;
+    }
+}

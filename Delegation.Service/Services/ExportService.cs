@@ -22,9 +22,9 @@ namespace Delegation.Service.Services
         private int sameDelegationCount = 1;
         private PDFService pdfService;
 
-        public ExportService(string fontFolder)
+        public ExportService(PDFService pdfService)
         {
-            pdfService = new PDFService(fontFolder);
+            this.pdfService = pdfService;
         }
 
         public void Start(string outputFolder, string formFile, string s89chFile,
