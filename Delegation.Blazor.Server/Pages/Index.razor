@@ -8,36 +8,42 @@
 @inject IWebHostEnvironment Environment
 
 
-<PageTitle>Delegation Tool</PageTitle>
+<PageTitle>輸出委派</PageTitle>
 
-<InputFile id="fileInput" OnChange="@UploadFile" hidden></InputFile>
 
-<MudButton HtmlTag="label"
-           Variant="Variant.Filled"
-           Color="Color.Primary"
-           StartIcon="@Icons.Filled.CloudUpload"
-           for="fileInput">
-    選擇檔案
-</MudButton>
 
-@if (isUploading)
-{
-    <p>Uploading...</p>
-}
-else if (uploadFile != null)
-{
-    <ul>
-        <li>
-            <ul>
-                <li>Name: @uploadFile.Name</li>
-                <li>Last modified: @uploadFile.LastModified.ToString()</li>
-                <li>Size (bytes): @uploadFile.Size</li>
-                <li>Content type: @uploadFile.ContentType</li>
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">1. 選擇委派表檔案</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (isUploading)
+        {
+            <MudText>Uploading...</MudText>
+        }
+        else if (uploadFile != null)
+        {
+            <MudListItem>Name: @uploadFile.Name</MudListItem>
+            <MudListItem>Last modified: @uploadFile.LastModified.ToString()</MudListItem>
+            <MudListItem>Size (bytes): @uploadFile.Size</MudListItem>
+            <MudListItem>Content type: @uploadFile.ContentType</MudListItem>
+        }
+    </MudCardContent>
+    <MudCardActions>
+        <InputFile id="fileInput" OnChange="@UploadFile" hidden></InputFile>
+        <MudButton HtmlTag="label"
+                   Variant="Variant.Filled"
+                   Color="Color.Default"
+                   StartIcon="@Icons.Filled.CloudUpload"
+                   for="fileInput">
+            選擇委派表檔案
+        </MudButton>
+    </MudCardActions>
+</MudCard>
 
-            </ul>
-        </li>
-    </ul>
-}
+
 
 @code {
     //private long maxFileSize = 1024 * 15;
@@ -68,7 +74,7 @@ else if (uploadFile != null)
             await using MemoryStream ms = new MemoryStream();
             await e.File.OpenReadStream().CopyToAsync(ms);
             
-            logger.LogInformation("測試memorystream: " + ms.Length);
+            logger.LogDebug("測試memorystream: " + ms.Length);
         }
         catch (Exception ex)
         {
