@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegationConsoleTool", "De
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Delegation.Service", "Delegation.Service\Delegation.Service.csproj", "{B15EE119-4A73-4AE7-A563-B9279A208FCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delegation.Blazor.Server", "Delegation.Blazor.Server\Delegation.Blazor.Server.csproj", "{8A984BD9-EA50-4920-A67F-2057E862DF2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Delegation.Blazor.Server", "Delegation.Blazor.Server\Delegation.Blazor.Server.csproj", "{8A984BD9-EA50-4920-A67F-2057E862DF2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,57 +10,76 @@
 
 <PageTitle>輸出委派</PageTitle>
 
-
-
-<MudCard>
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h6">1. 選擇委派表檔案</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
-        @if (isUploading)
+<div class="row">
+    <div class="col-md-6">
+        @if (isShowAlert)
         {
-            <MudText>Uploading...</MudText>
+            <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Left"
+                  ShowCloseIcon="true" CloseIconClicked="(() => isShowAlert=false)">@selectDeleFormCardStr</MudAlert>
         }
-        else if (uploadFile != null)
-        {
-            <MudListItem>Name: @uploadFile.Name</MudListItem>
-            <MudListItem>Last modified: @uploadFile.LastModified.ToString()</MudListItem>
-            <MudListItem>Size (bytes): @uploadFile.Size</MudListItem>
-            <MudListItem>Content type: @uploadFile.ContentType</MudListItem>
-        }
-    </MudCardContent>
-    <MudCardActions>
-        <InputFile id="fileInput" OnChange="@UploadFile" hidden></InputFile>
-        <MudButton HtmlTag="label"
-                   Variant="Variant.Filled"
-                   Color="Color.Default"
-                   StartIcon="@Icons.Filled.CloudUpload"
-                   for="fileInput">
-            選擇委派表檔案
-        </MudButton>
-    </MudCardActions>
-</MudCard>
-
-
+        <MudPaper Class="pa-16 ma-2" Elevation="3">
+            <MudText Typo="Typo.h6">@selectDeleFormCardStr</MudText>
+            <InputFile id="fileInput" OnChange="@UploadDeleFormBtnClick" hidden></InputFile>
+            <MudButton HtmlTag="label"
+                       Variant="Variant.Filled"
+                       Color="Color.Default"
+                       StartIcon="@Icons.Filled.CloudUpload"
+                       for="fileInput">
+                選擇委派表檔案
+            </MudButton>
+            <div class="card-body">
+                @if (isUploading)
+                {
+                    <MudText>Uploading...</MudText>
+                }
+                else if (uploadDeleForm != null)
+                {
+                    <MudList>Name: @uploadDeleForm.Name</MudList>
+                    <MudList>Last modified: @uploadDeleForm.LastModified.ToString()</MudList>
+                    <MudList>Size (bytes): @uploadDeleForm.Size</MudList>
+                    <MudList>Content type: @uploadDeleForm.ContentType</MudList>
+                }
+            </div>
+        </MudPaper>
+    </div>
+    
+    <div class="col-md-6">
+        <MudPaper Class="pa-16 ma-2" Elevation="3">
+            <MudText Typo="Typo.h6">@exportCardStr</MudText>
+            <MudButton HtmlTag="label"
+                       Variant="Variant.Filled"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Filled.PlayCircleOutline"
+                       OnClick="@ExportBtnClick"
+                       Disabled="@isExporting">
+                輸出委派單
+            </MudButton>
+            <div class="card-body">
+                <MudItem>
+                    <MudProgressCircular Color="Color.Secondary" Indeterminate="@isExporting" />
+                </MudItem>
+            </div>   
+        </MudPaper>
+    </div>
+</div>
 
 @code {
     //private long maxFileSize = 1024 * 15;
     private bool isUploading = false;
-    private IBrowserFile uploadFile = null;
+    private IBrowserFile uploadDeleForm = null;
+    private bool isShowAlert = false;
+    private bool isExporting = false;
 
-    public Index()
-    {
+    //string
+    private string selectDeleFormCardStr = "1. 選擇委派表檔案";
+    private string exportCardStr = "2. 輸出委派單";
 
-    }
-
-    private async Task UploadFile(InputFileChangeEventArgs e)
+    private async Task UploadDeleFormBtnClick(InputFileChangeEventArgs e)
     {
         isUploading = true;
         try
         {
-            uploadFile = e.File;
+            uploadDeleForm = e.File;
             //var trustedFileNameForFileStorage = Path.GetRandomFileName();
             //string uploadFileFolder = Path.Combine(Environment.ContentRootPath, Constant.UPLOAD_FILE_FOLDER);
 
@@ -70,10 +89,10 @@
             //}
             //var path = Path.Combine(uploadFileFolder, trustedFileNameForFileStorage);
             //logger.LogInformation("上傳檔案路徑:" + path);
-
+            isShowAlert = uploadDeleForm == null ? true : false;
             await using MemoryStream ms = new MemoryStream();
             await e.File.OpenReadStream().CopyToAsync(ms);
-            
+
             logger.LogDebug("測試memorystream: " + ms.Length);
         }
         catch (Exception ex)
@@ -82,5 +101,17 @@
                 e.File.Name, ex.Message);
         }
         isUploading = false;
+    }
+
+    private void ExportBtnClick()
+    {
+        if(uploadDeleForm==null)
+        {
+            isShowAlert = true;
+        }
+        else
+        {
+            isExporting = true;
+        }
     }
 }
