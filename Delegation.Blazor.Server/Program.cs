@@ -1,3 +1,4 @@
+using BlazorDownloadFile;
 using Delegation.Blazor.Server.Data;
 using Delegation.Service.Services;
 using MudBlazor.Services;
@@ -12,6 +13,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<RecordService>();
 builder.Services.AddScoped<ExportService>();
 builder.Services.AddScoped(provider=>new PDFService(""));
+builder.Services.AddBlazorDownloadFile();
 
 var app = builder.Build();
 

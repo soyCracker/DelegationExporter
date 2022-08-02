@@ -1,12 +1,13 @@
 ﻿@page "/"
 @using System
 @using System.IO
+@using BlazorDownloadFile
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Logging
 @using Delegation.Blazor.Server.Base
 @inject ILogger<Index> logger
 @inject IWebHostEnvironment Environment
-
+@inject IBlazorDownloadFileService BlazorDownloadFileService
 
 <PageTitle>輸出委派</PageTitle>
 
@@ -90,10 +91,7 @@
             //var path = Path.Combine(uploadFileFolder, trustedFileNameForFileStorage);
             //logger.LogInformation("上傳檔案路徑:" + path);
             isShowAlert = uploadDeleForm == null ? true : false;
-            await using MemoryStream ms = new MemoryStream();
-            await e.File.OpenReadStream().CopyToAsync(ms);
 
-            logger.LogDebug("測試memorystream: " + ms.Length);
         }
         catch (Exception ex)
         {
@@ -103,7 +101,7 @@
         isUploading = false;
     }
 
-    private void ExportBtnClick()
+    private async Task ExportBtnClick()
     {
         if(uploadDeleForm==null)
         {
@@ -112,6 +110,14 @@
         else
         {
             isExporting = true;
+
+            await using MemoryStream ms = new MemoryStream();
+            await uploadDeleForm.OpenReadStream().CopyToAsync(ms);
+            await BlazorDownloadFileService.DownloadFile("test_20220802", ms, "application/octet-stream");
+
+            //logger.LogDebug("測試memorystream: " + ms.Length);
+
+            isExporting = false;
         }
     }
 }
