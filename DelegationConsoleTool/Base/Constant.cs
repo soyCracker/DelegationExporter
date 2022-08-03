@@ -12,7 +12,7 @@ namespace DelegationConsoleTool.Base
         public static readonly bool RELEASE_MODE = true;
 
         //program info
-        public static readonly string VERSION = "1.0.7-20220702";
+        public static readonly string VERSION = "1.0.8-20220803";
 
         //url
         public static readonly string GIT_RELEASE_API = "https://api.github.com/repos/soyCracker/DelegationExporter/releases/latest";

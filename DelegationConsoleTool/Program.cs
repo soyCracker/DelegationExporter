@@ -21,6 +21,7 @@ while (true)
 
 void FucDescOutput()
 {
+    Console.WriteLine("Release Mode: " + Constant.RELEASE_MODE);
     Console.WriteLine("Delegation Console Tool 功能:");
     Console.WriteLine("委派紀錄填寫 - 1");
     Console.WriteLine("輸出委派單 - 3");
@@ -55,9 +56,18 @@ void ExportWork()
     try
     {
         Console.WriteLine("輸出委派單");
-        ExportService exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
-        exportService.Start(Constant.OUTPUT_FOLDER, envirKit.PrepareAndGetTempXlsx(delegationFormFolder), s89chFile,
-            s89jpFile, Constant.DESC_STR, Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
+        string xlsx = envirKit.PrepareAndGetTempXlsx(delegationFormFolder);
+        if(string.IsNullOrEmpty(xlsx))
+        {
+            Console.WriteLine(Path.GetFullPath(delegationFormFolder) + " 沒有委派單可輸出\n");
+            Console.WriteLine(Directory.GetCurrentDirectory() + " 沒有委派單可輸出\n");
+        }
+        else
+        {
+            ExportService exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
+            exportService.Start(Constant.OUTPUT_FOLDER, xlsx, s89chFile,
+                s89jpFile, Constant.DESC_STR, Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
+        }  
     }
     catch (IOException ex)
     {

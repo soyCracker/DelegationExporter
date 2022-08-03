@@ -1,9 +1,6 @@
-﻿using DelegationConsoleTool.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Delegation.Service.Except;
+using DelegationConsoleTool.Base;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DelegationConsoleTool.Kits
 {
@@ -14,7 +11,7 @@ namespace DelegationConsoleTool.Kits
             if (!Constant.RELEASE_MODE)
             {
                 Directory.SetCurrentDirectory(Directory.GetCurrentDirectory() + "../../../../");
-                Console.WriteLine("work dir:"+Directory.GetCurrentDirectory() + "\n");
+                Console.WriteLine("work dir:" + Directory.GetCurrentDirectory() + "\n");
             }
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Console.OutputEncoding = Encoding.Unicode;
@@ -22,26 +19,30 @@ namespace DelegationConsoleTool.Kits
 
         public string PrepareAndGetTempXlsx(string fileFolder)
         {
-            string[] files = Directory.GetFiles(fileFolder).Where(f => f.EndsWith(".xls")||f.EndsWith(".xlsx")).ToArray();
-            if (files.Length>1)
+            string[] files = Directory.GetFiles(fileFolder).Where(f => f.EndsWith(".xls") || f.EndsWith(".xlsx")).ToArray();
+            if (files.Length > 1)
             {
-                Console.WriteLine("PrepareAndGetTempXlsx() MultipleXlsException\n");
-                //throw new MultipleXlsException();
+                throw new MultipleXlsException();
             }
-            string file = files[0];
-            string tempXls = file + "TEMPX";
-            if (File.Exists(tempXls))
+            else if (files.Length == 1)
             {
-                File.Delete(tempXls);
+                string file = files[0];
+                string tempXls = file + "TEMPX";
+                if (File.Exists(tempXls))
+                {
+                    File.Delete(tempXls);
+                }
+                File.Copy(file, tempXls);
+                Console.WriteLine("PrepareAndGetTempXlsx() tempXls:" + tempXls + "\n");
+                return tempXls;
+
             }
-            File.Copy(file, tempXls);
-            Console.WriteLine("PrepareAndGetTempXlsx() tempXls:" + tempXls + "\n");
-            return tempXls;
+            return "";
         }
 
         public string GetAssignRecordXlsx(string fileFolder)
         {
-            string[] files = Directory.GetFiles(fileFolder).Where(f => f.EndsWith(".xls")||f.EndsWith(".xlsx")).ToArray();
+            string[] files = Directory.GetFiles(fileFolder).Where(f => f.EndsWith(".xls") || f.EndsWith(".xlsx")).ToArray();
             string file = files[0];
             return file;
         }
