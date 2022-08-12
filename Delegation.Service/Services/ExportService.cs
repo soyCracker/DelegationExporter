@@ -23,28 +23,41 @@ namespace Delegation.Service.Services
             this.pdfService = pdfService;
         }
 
-        public Dictionary<string, MemoryStream> Start(string outputFolder, string formFile, string s89chFile,
+        public Dictionary<string, MemoryStream> Start(string formFile, string s89chFile,
             string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
         {
-            List<DelegationVM> list = ReadDelegationFromAssignFile(formFile);
-            return ExportDelegation(list, outputFolder, s89chFile, s89jpFile, descStr,
+            FileStream fs = new FileStream(formFile, FileMode.Open);
+            return Process(fs, s89chFile, s89jpFile, descStr, descJPStr, JPFlagStr);
+        }
+
+        public Dictionary<string, MemoryStream> Start(MemoryStream ms, string s89chFile,
+            string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
+        {
+            return Process(ms, s89chFile, s89jpFile, descStr, descJPStr, JPFlagStr);
+        }
+
+        private Dictionary<string, MemoryStream> Process(Stream stream, string s89chFile,
+            string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
+        {
+            List<DelegationVM> list = ReadDelegationFromAssignFile(stream);
+            return ExportDelegation(list, s89chFile, s89jpFile, descStr,
                 descJPStr, JPFlagStr);
         }
 
-        private List<DelegationVM> ReadDelegationFromAssignFile(string filePath)
+        private List<DelegationVM> ReadDelegationFromAssignFile(Stream stream)
         {
             try
             {
-                using (FileStream fs = new FileStream(filePath, FileMode.Open))
+                using (stream)
                 {
                     IWorkbook workbook;
                     try
                     {
-                        workbook = new XSSFWorkbook(fs);
+                        workbook = new XSSFWorkbook(stream);
                     }
                     catch (Exception)
                     {
-                        workbook = new HSSFWorkbook(fs);
+                        workbook = new HSSFWorkbook(stream);
                     }
                     ISheet sheet = workbook.GetSheetAt(0);
                     List<DelegationVM> vmList = new List<DelegationVM>();
@@ -100,7 +113,7 @@ namespace Delegation.Service.Services
             }
         }
 
-        private Dictionary<string, MemoryStream> ExportDelegation(List<DelegationVM> delegationList, string destFolder, string s89chFile,
+        private Dictionary<string, MemoryStream> ExportDelegation(List<DelegationVM> delegationList, string s89chFile,
             string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
         {
             Dictionary<string, MemoryStream> dict = new Dictionary<string, MemoryStream>();
@@ -117,13 +130,13 @@ namespace Delegation.Service.Services
                     //識別日文委派的字符替換掉
                     delegation.Name = delegation.Name.Replace(JPFlagStr, "");
                 }
-                Tuple<string, MemoryStream> tuple = WritePdf(s89, delegation, destFolder, description);
+                Tuple<string, MemoryStream> tuple = WritePdf(s89, delegation, description);
                 dict.Add(tuple.Item1, tuple.Item2);
             }
             return dict;
         }
 
-        private Tuple<string, MemoryStream> WritePdf(string s89, DelegationVM delegation, string destFolder, string description)
+        private Tuple<string, MemoryStream> WritePdf(string s89, DelegationVM delegation, string description)
         {
             using (FileStream fs = new FileStream(s89, FileMode.Open))
             {

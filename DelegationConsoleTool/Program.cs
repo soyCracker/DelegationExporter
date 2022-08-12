@@ -6,10 +6,10 @@ using DelegationConsoleTool.Kits;
 
 EnvirKit envirKit = new EnvirKit();
 envirKit.InitEnvironment();
-string delegationFormFolder = Constant.FILE_FOLDER + @"\" + Constant.DELEGATION_FORM_FOLDER;
-string assignmentFolder = Constant.FILE_FOLDER + @"\" + Constant.ASSIGNMENT_FOLDER;
-string s89chFile = Constant.FILE_FOLDER + @"\" + Constant.S89CH;
-string s89jpFile = Constant.FILE_FOLDER + @"\" + Constant.S89J;
+string delegationFormFolder = Path.Combine(Constant.FILE_FOLDER, Constant.DELEGATION_FORM_FOLDER);
+string assignmentFolder = Path.Combine(Constant.FILE_FOLDER, Constant.ASSIGNMENT_FOLDER);
+string s89chFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89CH);
+string s89jpFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89J);
 
 while (true)
 {
@@ -50,13 +50,12 @@ void RecordWork()
     string outputFolder = envirKit.CreateOutputFolder(Constant.OUTPUT_FOLDER);
     string delegationXlsx = envirKit.PrepareAndGetTempXlsx(delegationFormFolder);
     string assignRecordXlsx = envirKit.PrepareAndGetTempXlsx(assignmentFolder);
-    MemoryStream ms = recordService.Start(delegationXlsx, assignRecordXlsx);
+    byte[] data = recordService.Start(delegationXlsx, assignRecordXlsx);
     File.Delete(delegationXlsx);
     File.Delete(assignRecordXlsx);
     using (FileStream fs = new FileStream(Path.Combine(outputFolder, "assignmentNext.xlsx"), FileMode.Create))
     {
-        ms.WriteTo(fs);
-        ms.Close();
+        fs.Write(data, 0, data.Length);
     }
 }
 
@@ -74,9 +73,9 @@ void ExportWork()
         else
         {
             ExportService exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
-            string outputFolder = envirKit.CreateOutputFolder(Constant.OUTPUT_FOLDER);
-            Dictionary<string, MemoryStream> dict = exportService.Start(outputFolder, xlsx, s89chFile,
+            Dictionary<string, MemoryStream> dict = exportService.Start(xlsx, s89chFile,
                 s89jpFile, Constant.DESC_STR, Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
+            string outputFolder = envirKit.CreateOutputFolder(Constant.OUTPUT_FOLDER);
             SavePdfDict(dict, outputFolder);
         }
         File.Delete(xlsx);

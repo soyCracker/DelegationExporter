@@ -14,6 +14,7 @@ builder.Services.AddScoped<RecordService>();
 builder.Services.AddScoped<ExportService>();
 builder.Services.AddScoped(provider=>new PDFService(""));
 builder.Services.AddBlazorDownloadFile();
+builder.Services.AddScoped<ZipService>();
 
 var app = builder.Build();
 

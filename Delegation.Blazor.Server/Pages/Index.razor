@@ -5,9 +5,11 @@
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Logging
 @using Delegation.Blazor.Server.Base
+@using Delegation.Service.Services
 @inject ILogger<Index> logger
 @inject IWebHostEnvironment Environment
 @inject IBlazorDownloadFileService BlazorDownloadFileService
+@inject ExportService exportService
 
 <PageTitle>輸出委派</PageTitle>
 
@@ -70,6 +72,8 @@
     private IBrowserFile uploadDeleForm = null;
     private bool isShowAlert = false;
     private bool isExporting = false;
+    string s89chFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89CH);
+    string s89jpFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89J);
 
     //string
     private string selectDeleFormCardStr = "1. 選擇委派表檔案";
@@ -113,7 +117,14 @@
 
             await using MemoryStream ms = new MemoryStream();
             await uploadDeleForm.OpenReadStream().CopyToAsync(ms);
-            await BlazorDownloadFileService.DownloadFile("test_20220802", ms, "application/octet-stream");
+
+            exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
+            Dictionary<string, MemoryStream> dict = exportService.Start(ms, s89chFile, s89jpFile, Constant.DESC_STR, 
+                Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
+
+            //await using MemoryStream ms = new MemoryStream();
+            //await uploadDeleForm.OpenReadStream().CopyToAsync(ms);
+            //await BlazorDownloadFileService.DownloadFile("test_20220802", ms, "application/octet-stream");
 
             //logger.LogDebug("測試memorystream: " + ms.Length);
 

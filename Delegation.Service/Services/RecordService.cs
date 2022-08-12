@@ -15,7 +15,7 @@ namespace Delegation.Service.Services
 
         }
 
-        public MemoryStream Start(string formFile, string assignFile)
+        public byte[] Start(string formFile, string assignFile)
         {
             List<DelegationVM> vmList = ReadDelegation(formFile);
             return Record(vmList, assignFile);
@@ -100,7 +100,7 @@ namespace Delegation.Service.Services
             vmList.Add(vm);
         }
 
-        private MemoryStream Record(List<DelegationVM> vmList, string assignFilePath)
+        private byte[] Record(List<DelegationVM> vmList, string assignFilePath)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace Delegation.Service.Services
                     MemoryStream ms = new MemoryStream();
                     workbook.Write(ms);
                     workbook.Close();
-                    return ms;
+                    return ms.ToArray();
                 }
             }
             catch (Exception)
