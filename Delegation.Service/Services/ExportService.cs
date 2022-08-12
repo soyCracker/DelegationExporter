@@ -7,10 +7,6 @@ using iText.Kernel.Pdf;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Delegation.Service.Services
 {
@@ -27,73 +23,45 @@ namespace Delegation.Service.Services
             this.pdfService = pdfService;
         }
 
-        public void Start(string outputFolder, string formFile, string s89chFile,
+        public Dictionary<string, MemoryStream> Start(string outputFolder, string formFile, string s89chFile,
             string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
         {
             List<DelegationVM> list = ReadDelegationFromAssignFile(formFile);
-            ExportDelegation(list, CreateDestFolder(outputFolder), s89chFile, s89jpFile, descStr, 
+            return ExportDelegation(list, outputFolder, s89chFile, s89jpFile, descStr,
                 descJPStr, JPFlagStr);
-            File.Delete(formFile);
         }
 
-        public string GetTempXlsx(string fileFolder)
-        {
-            string[] files = Directory.GetFiles(fileFolder).Where(f => f.EndsWith(".xls") || f.EndsWith(".xlsx")).ToArray();
-            if (files.Length > 1)
-            {
-                Console.WriteLine("PrepareAndGetTempXlsx() MultipleXlsException\n");
-                throw new MultipleXlsException();
-            }
-            string file = files[0];
-            string tempXls = file + "TEMPX";
-            if (File.Exists(tempXls))
-            {
-                File.Delete(tempXls);
-            }
-            File.Copy(file, tempXls);
-            Console.WriteLine("PrepareAndGetTempXlsx() tempXls:" + tempXls + "\n");
-            return tempXls;
-        }
-
-        private string CreateDestFolder(string outputFolder)
-        {
-            if (!Directory.Exists(outputFolder + "//" + TimeUtil.GetTimeNow()))
-            {
-                Directory.CreateDirectory(outputFolder + "//" + TimeUtil.GetTimeNow());
-            }
-            return outputFolder + "//" + TimeUtil.GetTimeNow();
-        }
-
-        public List<DelegationVM> ReadDelegationFromAssignFile(string filePath)
+        private List<DelegationVM> ReadDelegationFromAssignFile(string filePath)
         {
             try
             {
-                FileStream fs = new FileStream(filePath, FileMode.Open);
-                IWorkbook workbook;
-                try
+                using (FileStream fs = new FileStream(filePath, FileMode.Open))
                 {
-                    workbook = new XSSFWorkbook(fs);
-                }
-                catch (Exception)
-                {
-                    workbook = new HSSFWorkbook(fs);
-                }
-                ISheet sheet = workbook.GetSheetAt(0);
-                List<DelegationVM> vmList = new List<DelegationVM>();
-                for (int j = 1; j <= 2; j++)
-                {
-                    for (int i = 4; i <= sheet.LastRowNum; i++)
+                    IWorkbook workbook;
+                    try
                     {
-                        var temp = GetEachDelegation(sheet, i, j);
-                        if(temp!=null)
-                        {
-                            vmList.Add(temp);
-                        }                       
+                        workbook = new XSSFWorkbook(fs);
                     }
+                    catch (Exception)
+                    {
+                        workbook = new HSSFWorkbook(fs);
+                    }
+                    ISheet sheet = workbook.GetSheetAt(0);
+                    List<DelegationVM> vmList = new List<DelegationVM>();
+                    for (int j = 1; j <= 2; j++)
+                    {
+                        for (int i = 4; i <= sheet.LastRowNum; i++)
+                        {
+                            var temp = GetEachDelegation(sheet, i, j);
+                            if (temp != null)
+                            {
+                                vmList.Add(temp);
+                            }
+                        }
+                    }
+                    workbook.Close();
+                    return vmList;
                 }
-                workbook.Close();
-                fs.Close();
-                return vmList;
             }
             catch (IOException)
             {
@@ -102,7 +70,7 @@ namespace Delegation.Service.Services
         }
 
         private DelegationVM GetEachDelegation(ISheet sheet, int rowNum, int classInt)
-        {        
+        {
             try
             {
                 DelegationVM vm = new DelegationVM();
@@ -111,12 +79,12 @@ namespace Delegation.Service.Services
                 vm.Header = StringUtil.GetChinesePrintAble(sheet.GetRow(rowNum).GetCell(1).ToString());
                 vm.Class = classInt.ToString();
                 vm.Date = sheet.GetRow(rowNum).GetCell(0).ToString();
-                
+
                 if (string.IsNullOrEmpty(vm.Name))
-                {                  
+                {
                     return null;
                 }
-                if(string.IsNullOrEmpty(vm.Date))
+                if (string.IsNullOrEmpty(vm.Date))
                 {
                     vm.Date = blockDate;
                 }
@@ -129,12 +97,13 @@ namespace Delegation.Service.Services
             catch (Exception)
             {
                 return null;
-            }      
+            }
         }
 
-        public void ExportDelegation(List<DelegationVM> delegationList, string destFolder, string s89chFile, 
+        private Dictionary<string, MemoryStream> ExportDelegation(List<DelegationVM> delegationList, string destFolder, string s89chFile,
             string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
         {
+            Dictionary<string, MemoryStream> dict = new Dictionary<string, MemoryStream>();
             foreach (DelegationVM delegation in delegationList)
             {
                 Console.WriteLine("-------------------------------\n");
@@ -148,21 +117,28 @@ namespace Delegation.Service.Services
                     //識別日文委派的字符替換掉
                     delegation.Name = delegation.Name.Replace(JPFlagStr, "");
                 }
-                WritePdf(s89, delegation, destFolder, description);
+                Tuple<string, MemoryStream> tuple = WritePdf(s89, delegation, destFolder, description);
+                dict.Add(tuple.Item1, tuple.Item2);
             }
+            return dict;
         }
 
-        private void WritePdf(string s89, DelegationVM delegation, string destFolder, string description)
+        private Tuple<string, MemoryStream> WritePdf(string s89, DelegationVM delegation, string destFolder, string description)
         {
             using (FileStream fs = new FileStream(s89, FileMode.Open))
             {
-                PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs),
-                    new PdfWriter(pdfService.FileNameExistAddR(Path.Combine(destFolder,
-                    TimeUtil.CovertDateToFileNameStr(delegation.Date) + description + delegation.Name + ".pdf"))));
+                MemoryStream ms = new MemoryStream();
+                PdfWriter pdfWriter = new PdfWriter(ms);
+                pdfWriter.SetCloseStream(false);
+                PdfDocument pdfDoc = new PdfDocument(new PdfReader(fs), pdfWriter);
                 PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
                 IDictionary<string, PdfFormField> fields = form.GetFormFields();
                 SetPdfField(fields, delegation, pdfDoc);
                 pdfDoc.Close();
+
+                string fileName = Path.Combine(TimeUtil.CovertDateToFileNameStr(delegation.Date) + description
+                    + delegation.Name + ".pdf");
+                return Tuple.Create(fileName, ms);
             }
         }
 
@@ -212,7 +188,7 @@ namespace Delegation.Service.Services
             lastDate = delegation.Date;
         }
 
-        private void SetPdfFieldDelegationCell(IDictionary<string, PdfFormField> fields, DelegationVM delegation, 
+        private void SetPdfFieldDelegationCell(IDictionary<string, PdfFormField> fields, DelegationVM delegation,
             PdfDocument pdfDoc)
         {
             Console.WriteLine("委派:" + delegation.Header + "\n");
@@ -265,15 +241,15 @@ namespace Delegation.Service.Services
             }
         }
 
-        private void SetPdfFieldClass(IDictionary<string, PdfFormField> fields, DelegationVM delegation, 
+        private void SetPdfFieldClass(IDictionary<string, PdfFormField> fields, DelegationVM delegation,
             PdfDocument pdfDoc)
         {
             Console.WriteLine("班別:" + delegation.Class + "\n");
-            if(delegation.Class == "1")
+            if (delegation.Class == "1")
             {
                 pdfService.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.Class1);
             }
-            else if(delegation.Class == "2")
+            else if (delegation.Class == "2")
             {
                 pdfService.SetPdfCheckBoxSelected(fields, pdfDoc, S89PdfField.Class2);
             }
@@ -281,6 +257,6 @@ namespace Delegation.Service.Services
             {
                 Console.WriteLine("班別填錯了吧\n");
             }
-        }      
+        }
     }
 }

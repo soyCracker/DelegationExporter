@@ -2,7 +2,6 @@
 using Delegation.Service.Services;
 using DelegationConsoleTool.Base;
 using DelegationConsoleTool.Kits;
-using System.Text;
 
 
 EnvirKit envirKit = new EnvirKit();
@@ -38,7 +37,7 @@ void Fuchub(string fucKey)
     {
         ExportWork();
     }
-    else if (fucKey=="99")
+    else if (fucKey == "99")
     {
         TestWork();
     }
@@ -48,7 +47,17 @@ void RecordWork()
 {
     Console.WriteLine("委派紀錄填寫");
     RecordService recordService = new RecordService();
-    recordService.Start(Constant.OUTPUT_FOLDER, envirKit.PrepareAndGetTempXlsx(delegationFormFolder), envirKit.GetAssignRecordXlsx(assignmentFolder));
+    string outputFolder = envirKit.CreateOutputFolder(Constant.OUTPUT_FOLDER);
+    string delegationXlsx = envirKit.PrepareAndGetTempXlsx(delegationFormFolder);
+    string assignRecordXlsx = envirKit.PrepareAndGetTempXlsx(assignmentFolder);
+    MemoryStream ms = recordService.Start(delegationXlsx, assignRecordXlsx);
+    File.Delete(delegationXlsx);
+    File.Delete(assignRecordXlsx);
+    using (FileStream fs = new FileStream(Path.Combine(outputFolder, "assignmentNext.xlsx"), FileMode.Create))
+    {
+        ms.WriteTo(fs);
+        ms.Close();
+    }
 }
 
 void ExportWork()
@@ -57,7 +66,7 @@ void ExportWork()
     {
         Console.WriteLine("輸出委派單");
         string xlsx = envirKit.PrepareAndGetTempXlsx(delegationFormFolder);
-        if(string.IsNullOrEmpty(xlsx))
+        if (string.IsNullOrEmpty(xlsx))
         {
             Console.WriteLine(Path.GetFullPath(delegationFormFolder) + " 沒有委派單可輸出\n");
             Console.WriteLine(Directory.GetCurrentDirectory() + " 沒有委派單可輸出\n");
@@ -65,9 +74,12 @@ void ExportWork()
         else
         {
             ExportService exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
-            exportService.Start(Constant.OUTPUT_FOLDER, xlsx, s89chFile,
+            string outputFolder = envirKit.CreateOutputFolder(Constant.OUTPUT_FOLDER);
+            Dictionary<string, MemoryStream> dict = exportService.Start(outputFolder, xlsx, s89chFile,
                 s89jpFile, Constant.DESC_STR, Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
-        }  
+            SavePdfDict(dict, outputFolder);
+        }
+        File.Delete(xlsx);
     }
     catch (IOException ex)
     {
@@ -88,6 +100,18 @@ void ExportWork()
     catch (Exception ex)
     {
         Console.WriteLine("未知錯誤，請複製以下資訊給開發者:" + ex + "\n");
+    }
+}
+
+void SavePdfDict(Dictionary<string, MemoryStream> dict, string outputFolder)
+{
+    foreach (var item in dict)
+    {
+        using (FileStream fs = new FileStream(Path.Combine(outputFolder, item.Key), FileMode.Create))
+        {
+            item.Value.WriteTo(fs);
+            item.Value.Close();
+        }
     }
 }
 

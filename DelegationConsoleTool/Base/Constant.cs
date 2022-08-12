@@ -9,7 +9,7 @@ namespace DelegationConsoleTool.Base
     public class Constant
     {
         //process mode
-        public static readonly bool RELEASE_MODE = true;
+        public static readonly bool RELEASE_MODE = false;
 
         //program info
         public static readonly string VERSION = "1.0.8-20220803";

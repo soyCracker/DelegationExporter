@@ -1,4 +1,5 @@
 ﻿using Delegation.Service.Except;
+using Delegation.Service.Utils;
 using DelegationConsoleTool.Base;
 using System.Text;
 
@@ -33,18 +34,22 @@ namespace DelegationConsoleTool.Kits
                     File.Delete(tempXls);
                 }
                 File.Copy(file, tempXls);
-                Console.WriteLine("PrepareAndGetTempXlsx() tempXls:" + tempXls + "\n");
+                Console.WriteLine("tempXls:" + tempXls + "\n");
                 return tempXls;
 
             }
             return "";
         }
 
-        public string GetAssignRecordXlsx(string fileFolder)
+        public string CreateOutputFolder(string outputFolder)
         {
-            string[] files = Directory.GetFiles(fileFolder).Where(f => f.EndsWith(".xls") || f.EndsWith(".xlsx")).ToArray();
-            string file = files[0];
-            return file;
+            string[] pathParam = { outputFolder, TimeUtil.GetTimeNow() };
+            string targetPath = Path.Combine(pathParam);
+            if (!Directory.Exists(targetPath))
+            {
+                Directory.CreateDirectory(targetPath);
+            }
+            return targetPath;
         }
     }
 }
