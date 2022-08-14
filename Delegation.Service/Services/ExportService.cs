@@ -157,7 +157,7 @@ namespace Delegation.Service.Services
 
         private void SetPdfField(IDictionary<string, PdfFormField> fields, DelegationVM delegation, PdfDocument pdfDoc)
         {
-            if (pdfService.IsMsjhbdExist())
+            if (pdfService.IsNotoSansExist())
             {
                 //我她X的，SetFont要在SetValue之前
                 Console.WriteLine("學生:" + delegation.Name + "\n");
