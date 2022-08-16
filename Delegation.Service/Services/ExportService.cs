@@ -23,20 +23,20 @@ namespace Delegation.Service.Services
             this.pdfService = pdfService;
         }
 
-        public Dictionary<string, MemoryStream> Start(string formFile, string s89chFile,
+        public Dictionary<string, byte[]> Start(string formFile, string s89chFile,
             string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
         {
             FileStream fs = new FileStream(formFile, FileMode.Open);
             return Process(fs, s89chFile, s89jpFile, descStr, descJPStr, JPFlagStr);
         }
 
-        public Dictionary<string, MemoryStream> Start(MemoryStream ms, string s89chFile,
+        public Dictionary<string, byte[]> Start(MemoryStream ms, string s89chFile,
             string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
         {
             return Process(ms, s89chFile, s89jpFile, descStr, descJPStr, JPFlagStr);
         }
 
-        private Dictionary<string, MemoryStream> Process(Stream stream, string s89chFile,
+        private Dictionary<string, byte[]> Process(Stream stream, string s89chFile,
             string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
         {
             List<DelegationVM> list = ReadDelegationFromAssignFile(stream);
@@ -113,10 +113,10 @@ namespace Delegation.Service.Services
             }
         }
 
-        private Dictionary<string, MemoryStream> ExportDelegation(List<DelegationVM> delegationList, string s89chFile,
+        private Dictionary<string, byte[]> ExportDelegation(List<DelegationVM> delegationList, string s89chFile,
             string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
         {
-            Dictionary<string, MemoryStream> dict = new Dictionary<string, MemoryStream>();
+            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
             foreach (DelegationVM delegation in delegationList)
             {
                 Console.WriteLine("-------------------------------\n");
@@ -130,13 +130,13 @@ namespace Delegation.Service.Services
                     //識別日文委派的字符替換掉
                     delegation.Name = delegation.Name.Replace(JPFlagStr, "");
                 }
-                Tuple<string, MemoryStream> tuple = WritePdf(s89, delegation, description);
+                Tuple<string, byte[]> tuple = WritePdf(s89, delegation, description);
                 dict.Add(tuple.Item1, tuple.Item2);
             }
             return dict;
         }
 
-        private Tuple<string, MemoryStream> WritePdf(string s89, DelegationVM delegation, string description)
+        private Tuple<string, byte[]> WritePdf(string s89, DelegationVM delegation, string description)
         {
             using (FileStream fs = new FileStream(s89, FileMode.Open))
             {
@@ -148,10 +148,11 @@ namespace Delegation.Service.Services
                 IDictionary<string, PdfFormField> fields = form.GetFormFields();
                 SetPdfField(fields, delegation, pdfDoc);
                 pdfDoc.Close();
-
                 string fileName = Path.Combine(TimeUtil.CovertDateToFileNameStr(delegation.Date) + description
                     + delegation.Name + ".pdf");
-                return Tuple.Create(fileName, ms);
+                byte[] data = ms.ToArray();
+                ms.Close();
+                return Tuple.Create(fileName, data);
             }
         }
 

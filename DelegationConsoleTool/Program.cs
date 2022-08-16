@@ -2,6 +2,7 @@
 using Delegation.Service.Services;
 using DelegationConsoleTool.Base;
 using DelegationConsoleTool.Kits;
+using NPOI.POIFS.Crypt.Dsig;
 
 
 EnvirKit envirKit = new EnvirKit();
@@ -73,7 +74,7 @@ void ExportWork()
         else
         {
             ExportService exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
-            Dictionary<string, MemoryStream> dict = exportService.Start(xlsx, s89chFile,
+            Dictionary<string, byte[]> dict = exportService.Start(xlsx, s89chFile,
                 s89jpFile, Constant.DESC_STR, Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
             string outputFolder = envirKit.CreateOutputFolder(Constant.OUTPUT_FOLDER);
             SavePdfDict(dict, outputFolder);
@@ -102,14 +103,13 @@ void ExportWork()
     }
 }
 
-void SavePdfDict(Dictionary<string, MemoryStream> dict, string outputFolder)
+void SavePdfDict(Dictionary<string, byte[]> dict, string outputFolder)
 {
     foreach (var item in dict)
     {
         using (FileStream fs = new FileStream(Path.Combine(outputFolder, item.Key), FileMode.Create))
         {
-            item.Value.WriteTo(fs);
-            item.Value.Close();
+            fs.Write(item.Value, 0, item.Value.Length);
         }
     }
 }
