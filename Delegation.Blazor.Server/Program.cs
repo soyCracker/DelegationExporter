@@ -15,8 +15,17 @@ builder.Services.AddScoped<ExportService>();
 builder.Services.AddScoped(provider=>new PDFService(""));
 builder.Services.AddBlazorDownloadFile();
 builder.Services.AddScoped<ZipService>();
+builder.Services.AddLocalization(option =>
+{
+    option.ResourcesPath = "Resources";
+});
 
 var app = builder.Build();
+
+//app.UseRequestLocalization("en-US");
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .AddSupportedCultures(new[] { "zh-Hant", "en-US" })
+    .AddSupportedUICultures(new[] { "zh-Hant", "en-US" }));
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

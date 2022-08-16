@@ -6,29 +6,35 @@
 @using Microsoft.Extensions.Logging
 @using Delegation.Blazor.Server.Base
 @using Delegation.Service.Services
+@using System.Globalization
 @inject ILogger<Index> logger
 @inject IWebHostEnvironment Environment
 @inject IBlazorDownloadFileService BlazorDownloadFileService
 @inject ExportService exportService
+@inject IStringLocalizer<Index> loc
 
-<PageTitle>輸出委派</PageTitle>
+<PageTitle>@loc["PageTitle"]</PageTitle>
+
+<p>
+    <b>CurrentCulture</b>: @CultureInfo.CurrentCulture
+</p>
 
 <div class="row">
     <div class="col-md-6">
         @if (isShowAlert)
         {
             <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Left"
-                  ShowCloseIcon="true" CloseIconClicked="(() => isShowAlert=false)">@selectDeleFormCardStr</MudAlert>
+                  ShowCloseIcon="true" CloseIconClicked="(() => isShowAlert=false)">@loc["SelectDeleFormCardStr"]</MudAlert>
         }
         <MudPaper Class="pa-16 ma-2" Elevation="3">
-            <MudText Typo="Typo.h6">@selectDeleFormCardStr</MudText>
+            <MudText Typo="Typo.h6">@loc["SelectDeleFormCardStr"]</MudText>
             <InputFile id="fileInput" OnChange="@UploadDeleFormBtnClick" hidden></InputFile>
             <MudButton HtmlTag="label"
                        Variant="Variant.Filled"
                        Color="Color.Default"
                        StartIcon="@Icons.Filled.CloudUpload"
                        for="fileInput">
-                選擇委派表檔案
+                @loc["SelectFileBtn"]
             </MudButton>
             <div class="card-body">
                 @if (isUploading)
@@ -48,14 +54,14 @@
     
     <div class="col-md-6">
         <MudPaper Class="pa-16 ma-2" Elevation="3">
-            <MudText Typo="Typo.h6">@exportCardStr</MudText>
+            <MudText Typo="Typo.h6">@loc["ExportCardStr"]</MudText>
             <MudButton HtmlTag="label"
                        Variant="Variant.Filled"
                        Color="Color.Secondary"
                        StartIcon="@Icons.Filled.PlayCircleOutline"
                        OnClick="@ExportBtnClick"
                        Disabled="@isExporting">
-                輸出委派單
+                @loc["ExportBtn"]
             </MudButton>
             <div class="card-body">
                 <MudItem>
@@ -74,10 +80,6 @@
     private bool isExporting = false;
     string s89chFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89CH);
     string s89jpFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89J);
-
-    //string
-    private string selectDeleFormCardStr = "1. 選擇委派表檔案";
-    private string exportCardStr = "2. 輸出委派單";
 
     private async Task UploadDeleFormBtnClick(InputFileChangeEventArgs e)
     {

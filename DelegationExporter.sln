@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31710.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegationExporter", "DelegationExporter\DelegationExporter.csproj", "{E05DB385-FDDB-46AE-977E-749A16E72348}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegationConsoleTool", "DelegationConsoleTool\DelegationConsoleTool.csproj", "{32B1F488-CA3B-4AB6-9CD2-8F4B362880AD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Delegation.Service", "Delegation.Service\Delegation.Service.csproj", "{B15EE119-4A73-4AE7-A563-B9279A208FCF}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E05DB385-FDDB-46AE-977E-749A16E72348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E05DB385-FDDB-46AE-977E-749A16E72348}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E05DB385-FDDB-46AE-977E-749A16E72348}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E05DB385-FDDB-46AE-977E-749A16E72348}.Release|Any CPU.Build.0 = Release|Any CPU
 		{32B1F488-CA3B-4AB6-9CD2-8F4B362880AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{32B1F488-CA3B-4AB6-9CD2-8F4B362880AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32B1F488-CA3B-4AB6-9CD2-8F4B362880AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
