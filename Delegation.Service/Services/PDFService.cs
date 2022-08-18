@@ -19,7 +19,7 @@ namespace Delegation.Service.Services
             this.fontFolder = fontFolder;
         }
 
-        //思源黑體 itext 7.1.5修改字體功能正常
+        //思源黑體 itext 7.1.5、7.1.14修改字體功能正常
         public PdfFont GetNotoSansFont()
         {
             string path = System.IO.Path.Combine(fontFolder, "NotoSansCJKtc-VF.ttf");

@@ -23,29 +23,24 @@ namespace Delegation.Service.Services
             this.pdfService = pdfService;
         }
 
-        public Dictionary<string, byte[]> Start(string formFile, string s89chFile,
-            string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
+        public Dictionary<string, byte[]> Start(string formFile, string s89chFile, string s89jpFile, 
+            string descStr, string descJPStr, string JPFlagStr)
         {
             FileStream fs = new FileStream(formFile, FileMode.Open);
             return Process(fs, s89chFile, s89jpFile, descStr, descJPStr, JPFlagStr);
         }
 
-        public Dictionary<string, byte[]> Start(MemoryStream ms, string s89chFile,
-            string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
+        public Dictionary<string, byte[]> Start(MemoryStream ms, string s89chFile, string s89jpFile, 
+            string descStr, string descJPStr, string JPFlagStr)
         {
             return Process(ms, s89chFile, s89jpFile, descStr, descJPStr, JPFlagStr);
         }
 
-        private Dictionary<string, byte[]> Process(Stream stream, string s89chFile,
-            string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
+        private Dictionary<string, byte[]> Process(Stream stream, string s89chFile, string s89jpFile, 
+            string descStr, string descJPStr, string JPFlagStr)
         {
-            List<DelegationVM> list = ReadDelegationFromAssignFile(stream);
-            return ExportDelegation(list, s89chFile, s89jpFile, descStr,
-                descJPStr, JPFlagStr);
-        }
-
-        private List<DelegationVM> ReadDelegationFromAssignFile(Stream stream)
-        {
+            //DateTime start = DateTime.Now;
+            //Console.WriteLine("Export Process start:" + start);
             try
             {
                 using (stream)
@@ -60,20 +55,31 @@ namespace Delegation.Service.Services
                         workbook = new HSSFWorkbook(stream);
                     }
                     ISheet sheet = workbook.GetSheetAt(0);
-                    List<DelegationVM> vmList = new List<DelegationVM>();
+                    Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
                     for (int j = 1; j <= 2; j++)
                     {
                         for (int i = 4; i <= sheet.LastRowNum; i++)
                         {
-                            var temp = GetEachDelegation(sheet, i, j);
-                            if (temp != null)
+                            //DateTime ls = DateTime.Now;
+                            //Console.WriteLine("Delegation Read & Export start:" + ls);
+                            var vm = GetEachDelegation(sheet, i, j);
+                            if (vm != null)
                             {
-                                vmList.Add(temp);
+
+                                var tuple = ExportDelegation(vm, s89chFile, s89jpFile, descStr,
+                                    descJPStr, JPFlagStr);
+                                dict.Add(tuple.Item1, tuple.Item2);
                             }
+                            //DateTime le = DateTime.Now;
+                            //Console.WriteLine("Delegation Read & Export end:" + le);
+                            //Console.WriteLine("Delegation Read & Export diff:" + le.Subtract(ls));
                         }
                     }
                     workbook.Close();
-                    return vmList;
+                    //DateTime end = DateTime.Now;
+                    //Console.WriteLine("Export Process end:" + end);
+                    //Console.WriteLine("Export Process diff:" + end.Subtract(start));
+                    return dict;
                 }
             }
             catch (IOException)
@@ -88,15 +94,16 @@ namespace Delegation.Service.Services
             {
                 DelegationVM vm = new DelegationVM();
                 vm.Name = sheet.GetRow(rowNum).GetCell(2 + (classInt - 1) * 2).ToString();
+                if (string.IsNullOrEmpty(vm.Name))
+                {
+                    return null;
+                }
+
                 vm.Assistant = sheet.GetRow(rowNum).GetCell(3 + (classInt - 1) * 2).ToString();
                 vm.Header = StringUtil.GetChinesePrintAble(sheet.GetRow(rowNum).GetCell(1).ToString());
                 vm.Class = classInt.ToString();
                 vm.Date = sheet.GetRow(rowNum).GetCell(0).ToString();
 
-                if (string.IsNullOrEmpty(vm.Name))
-                {
-                    return null;
-                }
                 if (string.IsNullOrEmpty(vm.Date))
                 {
                     vm.Date = blockDate;
@@ -113,27 +120,27 @@ namespace Delegation.Service.Services
             }
         }
 
-        private Dictionary<string, byte[]> ExportDelegation(List<DelegationVM> delegationList, string s89chFile,
+        private Tuple<string, byte[]> ExportDelegation(DelegationVM vm, string s89chFile,
             string s89jpFile, string descStr, string descJPStr, string JPFlagStr)
         {
-            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
-            foreach (DelegationVM delegation in delegationList)
+            //DateTime start = DateTime.Now;
+            //Console.WriteLine("ExportDelegation start:" + start);
+            Console.WriteLine("-------------------------------\n");
+            string s89 = s89chFile;
+            string description = descStr;
+            //識別日文委派
+            if (vm.Name.Contains(JPFlagStr))
             {
-                Console.WriteLine("-------------------------------\n");
-                string s89 = s89chFile;
-                string description = descStr;
-                //識別日文委派
-                if (delegation.Name.Contains(JPFlagStr))
-                {
-                    s89 = s89jpFile;
-                    description = description + descJPStr;
-                    //識別日文委派的字符替換掉
-                    delegation.Name = delegation.Name.Replace(JPFlagStr, "");
-                }
-                Tuple<string, byte[]> tuple = WritePdf(s89, delegation, description);
-                dict.Add(tuple.Item1, tuple.Item2);
+                s89 = s89jpFile;
+                description = description + descJPStr;
+                //識別日文委派的字符替換掉
+                vm.Name = vm.Name.Replace(JPFlagStr, "");
             }
-            return dict;
+            Tuple<string, byte[]> tuple = WritePdf(s89, vm, description);
+            //DateTime end = DateTime.Now;
+            //Console.WriteLine("ExportDelegation end:" + end);
+            //Console.WriteLine("ExportDelegation diff:" + end.Subtract(start));
+            return tuple;
         }
 
         private Tuple<string, byte[]> WritePdf(string s89, DelegationVM delegation, string description)

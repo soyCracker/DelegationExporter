@@ -121,8 +121,8 @@
             await uploadDeleForm.OpenReadStream().CopyToAsync(ms);
 
             exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
-            Dictionary<string, MemoryStream> dict = exportService.Start(ms, s89chFile, s89jpFile, Constant.DESC_STR, 
-                Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
+            //Dictionary<string, MemoryStream> dict = exportService.Start(ms, s89chFile, s89jpFile, Constant.DESC_STR, 
+            //    Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
 
             //await using MemoryStream ms = new MemoryStream();
             //await uploadDeleForm.OpenReadStream().CopyToAsync(ms);

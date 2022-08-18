@@ -2,7 +2,6 @@
 using Delegation.Service.Services;
 using DelegationConsoleTool.Base;
 using DelegationConsoleTool.Kits;
-using NPOI.POIFS.Crypt.Dsig;
 
 
 EnvirKit envirKit = new EnvirKit();
@@ -118,8 +117,3 @@ static void TestWork()
 {
     Console.WriteLine("TestWork() !!!\n");
 }
-
-
-
-
-
