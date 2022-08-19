@@ -30,13 +30,13 @@ namespace Delegation.Service.Services
             return Process(fs, s89chFile, s89jpFile, descStr, descJPStr, JPFlagStr);
         }
 
-        public Dictionary<string, byte[]> Start(MemoryStream ms, string s89chFile, string s89jpFile, 
+        public Dictionary<string, byte[]> Start(FileStream fs, string s89chFile, string s89jpFile, 
             string descStr, string descJPStr, string JPFlagStr)
         {
-            return Process(ms, s89chFile, s89jpFile, descStr, descJPStr, JPFlagStr);
+            return Process(fs, s89chFile, s89jpFile, descStr, descJPStr, JPFlagStr);
         }
 
-        private Dictionary<string, byte[]> Process(Stream stream, string s89chFile, string s89jpFile, 
+        private Dictionary<string, byte[]> Process(FileStream stream, string s89chFile, string s89jpFile, 
             string descStr, string descJPStr, string JPFlagStr)
         {
             //DateTime start = DateTime.Now;
@@ -46,12 +46,16 @@ namespace Delegation.Service.Services
                 using (stream)
                 {
                     IWorkbook workbook;
-                    try
+                    // 避免報異常EOF in header
+                    stream.Position = 0;
+                    if (stream.Name.ToLower().EndsWith(".xlsx"))
                     {
+                        Console.WriteLine("XSSFWorkbook");
                         workbook = new XSSFWorkbook(stream);
                     }
-                    catch (Exception)
+                    else
                     {
+                        Console.WriteLine("HSSFWorkbook");
                         workbook = new HSSFWorkbook(stream);
                     }
                     ISheet sheet = workbook.GetSheetAt(0);

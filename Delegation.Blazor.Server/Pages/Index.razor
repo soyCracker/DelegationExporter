@@ -116,20 +116,23 @@
         else
         {
             isExporting = true;
+            string temp = Path.Combine(Constant.FILE_FOLDER, "temp.xlsx");
+            using (FileStream fs = new FileStream(temp, FileMode.Create))
+            {
+                await uploadDeleForm.OpenReadStream().CopyToAsync(fs);
+                exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
+                Dictionary<string, Byte[]> dict = exportService.Start(fs, s89chFile, s89jpFile, Constant.DESC_STR,
+                    Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
 
-            await using MemoryStream ms = new MemoryStream();
-            await uploadDeleForm.OpenReadStream().CopyToAsync(ms);
+                foreach (var pair in dict)
+                {
+                    await BlazorDownloadFileService.DownloadFile(pair.Key, pair.Value, "application/octet-stream");
+                }
 
-            exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
-            //Dictionary<string, MemoryStream> dict = exportService.Start(ms, s89chFile, s89jpFile, Constant.DESC_STR, 
-            //    Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
 
-            //await using MemoryStream ms = new MemoryStream();
-            //await uploadDeleForm.OpenReadStream().CopyToAsync(ms);
-            //await BlazorDownloadFileService.DownloadFile("test_20220802", ms, "application/octet-stream");
-
-            //logger.LogDebug("測試memorystream: " + ms.Length);
-
+                logger.LogDebug("測試memorystream: " + fs.Length);
+            }
+            File.Delete(temp);
             isExporting = false;
         }
     }
