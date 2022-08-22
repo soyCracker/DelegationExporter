@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO.Compression;
 
 namespace Delegation.Service.Services
 {
     public class ZipService
     {
-        public static byte[] ZipData(Dictionary<string, byte[]> data)
+        public byte[] ZipData(Dictionary<string, byte[]> data)
         {
             using (var zipStream = new MemoryStream())
             {

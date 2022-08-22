@@ -132,4 +132,16 @@
   <data name="ExportBtn" xml:space="preserve">
     <value>Export Delegation</value>
   </data>
+  <data name="ErrorUploadFile" xml:space="preserve">
+    <value>Please upload correct file format(xls or xlsx)</value>
+  </data>
+  <data name="Exporting" xml:space="preserve">
+    <value>Exporting......</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Uploading......</value>
+  </data>
+  <data name="Ziping" xml:space="preserve">
+    <value>Compression......</value>
+  </data>
 </root>

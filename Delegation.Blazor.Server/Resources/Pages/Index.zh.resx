@@ -132,4 +132,19 @@
   <data name="ExportBtn" xml:space="preserve">
     <value>輸出委派單</value>
   </data>
+  <data name="ErrorUploadFile" xml:space="preserve">
+    <value>請上傳正確檔案格式(xls or xlsx)</value>
+  </data>
+  <data name="Exporting" xml:space="preserve">
+    <value>輸出中......</value>
+  </data>
+  <data name="string1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>上傳中......</value>
+  </data>
+  <data name="Ziping" xml:space="preserve">
+    <value>壓縮中......</value>
+  </data>
 </root>

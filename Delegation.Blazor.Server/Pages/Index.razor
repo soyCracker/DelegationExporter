@@ -11,6 +11,7 @@
 @inject IWebHostEnvironment Environment
 @inject IBlazorDownloadFileService BlazorDownloadFileService
 @inject ExportService exportService
+@inject ZipService zipService
 @inject IStringLocalizer<Index> loc
 
 <PageTitle>@loc["PageTitle"]</PageTitle>
@@ -24,7 +25,7 @@
         @if (isShowAlert)
         {
             <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Left"
-                  ShowCloseIcon="true" CloseIconClicked="(() => isShowAlert=false)">@loc["SelectDeleFormCardStr"]</MudAlert>
+                  ShowCloseIcon="true" CloseIconClicked="(() => isShowAlert=false)">@cardOneErrMsg</MudAlert>
         }
         <MudPaper Class="pa-16 ma-2" Elevation="3">
             <MudText Typo="Typo.h6">@loc["SelectDeleFormCardStr"]</MudText>
@@ -39,14 +40,14 @@
             <div class="card-body">
                 @if (isUploading)
                 {
-                    <MudText>Uploading...</MudText>
+                    <MudText>@loc["Uploading"]</MudText>
                 }
-                else if (uploadDeleForm != null)
+                else if (uploadForm != null)
                 {
-                    <MudList>Name: @uploadDeleForm.Name</MudList>
-                    <MudList>Last modified: @uploadDeleForm.LastModified.ToString()</MudList>
-                    <MudList>Size (bytes): @uploadDeleForm.Size</MudList>
-                    <MudList>Content type: @uploadDeleForm.ContentType</MudList>
+                    <MudList>Name: @uploadForm.Name</MudList>
+                    <MudList>Last modified: @uploadForm.LastModified.ToString()</MudList>
+                    <MudList>Size (bytes): @uploadForm.Size</MudList>
+                    <MudList>Content type: @uploadForm.ContentType</MudList>
                 }
             </div>
         </MudPaper>
@@ -67,37 +68,38 @@
                 <MudItem>
                     <MudProgressCircular Color="Color.Secondary" Indeterminate="@isExporting" />
                 </MudItem>
+                <MudText>@exportProcessMsg</MudText>
             </div>   
         </MudPaper>
     </div>
 </div>
 
 @code {
-    //private long maxFileSize = 1024 * 15;
     private bool isUploading = false;
-    private IBrowserFile uploadDeleForm = null;
+    private IBrowserFile uploadForm = null;
     private bool isShowAlert = false;
     private bool isExporting = false;
-    string s89chFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89CH);
-    string s89jpFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89J);
+    private string s89chFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89CH);
+    private string s89jpFile = Path.Combine(Constant.FILE_FOLDER, Constant.S89J);
+    private string cardOneErrMsg = "";
+    private string exportProcessMsg = "";
 
     private async Task UploadDeleFormBtnClick(InputFileChangeEventArgs e)
     {
         isUploading = true;
         try
         {
-            uploadDeleForm = e.File;
-            //var trustedFileNameForFileStorage = Path.GetRandomFileName();
-            //string uploadFileFolder = Path.Combine(Environment.ContentRootPath, Constant.UPLOAD_FILE_FOLDER);
-
-            //if (!File.Exists(uploadFileFolder))
-            //{
-            //    Directory.CreateDirectory(uploadFileFolder);
-            //}
-            //var path = Path.Combine(uploadFileFolder, trustedFileNameForFileStorage);
-            //logger.LogInformation("上傳檔案路徑:" + path);
-            isShowAlert = uploadDeleForm == null ? true : false;
-
+            uploadForm = e.File;
+            if (uploadForm==null || !(uploadForm.Name.ToLower().EndsWith(".xls") || 
+                    uploadForm.Name.ToLower().EndsWith(".xlsx")))
+            {
+                isShowAlert = true;
+                cardOneErrMsg = loc["ErrorUploadFile"];
+            }
+            else
+            {
+                isShowAlert = false;
+            }
         }
         catch (Exception ex)
         {
@@ -109,36 +111,31 @@
 
     private async Task ExportBtnClick()
     {
-        if(uploadDeleForm==null)
+        if(uploadForm==null)
         {
+            cardOneErrMsg = loc["SelectDeleFormCardStr"];
             isShowAlert = true;
         }
         else
         {
             isExporting = true;
+            exportProcessMsg = loc["Exporting"];
             string temp = Path.Combine(Constant.FILE_FOLDER, "temp.xlsx");
             using (FileStream fs = new FileStream(temp, FileMode.Create))
             {
-                await uploadDeleForm.OpenReadStream().CopyToAsync(fs);
+                await uploadForm.OpenReadStream().CopyToAsync(fs);
                 exportService = new ExportService(new PDFService(Constant.FONT_FOLDER));
-                Dictionary<string, Byte[]> dict = exportService.Start(fs, s89chFile, s89jpFile, Constant.DESC_STR,
-                    Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
-
-                foreach (var pair in dict)
-                {
-                    await BlazorDownloadFileService.DownloadFile(pair.Key, pair.Value, "application/octet-stream");
-                }
-
-
-                logger.LogDebug("測試memorystream: " + fs.Length);
+                Dictionary<string, Byte[]> dict = exportService.Start(fs, s89chFile, s89jpFile, 
+                    Constant.DESC_STR, Constant.DESC_JP_STR, Constant.JP_FLAG_STR);
+                exportProcessMsg = loc["Ziping"];
+                byte[] zip = zipService.ZipData(dict);
+                exportProcessMsg = "";
+                string zipFileName = string.Format("{0}{1}.{2}", "delegation_zip_",
+                    DateTime.Now.ToString("yyyyMMddHHmmss"), "zip");
+                await BlazorDownloadFileService.DownloadFile(zipFileName, zip, "application/octet-stream");
             }
             File.Delete(temp);
             isExporting = false;
         }
-    }
-
-    private void Export()
-    {
-        
     }
 }
