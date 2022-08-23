@@ -1,0 +1,193 @@
+﻿@page "/Record"
+@using System
+@using System.IO
+@using BlazorDownloadFile
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Logging
+@using Delegation.Blazor.Server.Base
+@using Delegation.Service.Services
+@using System.Globalization
+@inject ILogger<Record> logger
+@inject IWebHostEnvironment Environment
+@inject IBlazorDownloadFileService BlazorDownloadFileService
+@inject RecordService recordService
+@inject ZipService zipService
+@inject IStringLocalizer<Record> loc
+
+<PageTitle>@loc["PageTitle"]</PageTitle>
+
+<div class="row">
+    <div class="col-md-6">
+        @if (isShowAssignAlert)
+        {
+            <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Left"
+                  ShowCloseIcon="true" CloseIconClicked="(() => isShowAssignAlert=false)">@assignRecordErrMsg</MudAlert>
+        }
+        <MudPaper Class="pa-16 ma-2" Elevation="3">
+            <MudText Typo="Typo.h6">@loc["SelectPreAssignRecord"]</MudText>
+            <InputFile id="fileInput" OnChange="@UploadAssignRecordBtnClick" hidden></InputFile>
+            <MudButton HtmlTag="label"
+                       Variant="Variant.Filled"
+                       Color="Color.Default"
+                       StartIcon="@Icons.Filled.CloudUpload"
+                       for="fileInput">
+                @loc["SelectFileBtn"]
+            </MudButton>
+            <div class="card-body">
+                @if (isAssignRecordUploading)
+                {
+                    <MudText>@loc["Uploading"]</MudText>
+                }
+                else if (uploadAssignRecord != null)
+                {
+                    <MudList>Name: @uploadAssignRecord.Name</MudList>
+                    <MudList>Last modified: @uploadAssignRecord.LastModified.ToString()</MudList>
+                    <MudList>Size (bytes): @uploadAssignRecord.Size</MudList>
+                    <MudList>Content type: @uploadAssignRecord.ContentType</MudList>
+                }
+            </div>
+        </MudPaper>
+    </div>
+
+    <div class="col-md-6">
+        @if (isShowDelegationAlert)
+        {
+            <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Left"
+                  ShowCloseIcon="true" CloseIconClicked="(() => isShowDelegationAlert=false)">@delegationErrMsg</MudAlert>
+        }
+        <MudPaper Class="pa-16 ma-2" Elevation="3">
+            <MudText Typo="Typo.h6">@loc["SelectDelegationForm"]</MudText>
+            <InputFile id="fileInput" OnChange="@UploadDeleFormBtnClick" hidden></InputFile>
+            <MudButton HtmlTag="label"
+                       Variant="Variant.Filled"
+                       Color="Color.Default"
+                       StartIcon="@Icons.Filled.CloudUpload"
+                       for="fileInput">
+                @loc["SelectFileBtn"]
+            </MudButton>
+            <div class="card-body">
+                @if (isDelegationUploading)
+                {
+                    <MudText>@loc["Uploading"]</MudText>
+                }
+                else if (uploadDelegationForm != null)
+                {
+                    <MudList>Name: @uploadDelegationForm.Name</MudList>
+                    <MudList>Last modified: @uploadDelegationForm.LastModified.ToString()</MudList>
+                    <MudList>Size (bytes): @uploadDelegationForm.Size</MudList>
+                    <MudList>Content type: @uploadDelegationForm.ContentType</MudList>
+                }
+            </div>
+        </MudPaper>
+    </div>
+
+    <div class="col-md-6">
+        <MudPaper Class="pa-16 ma-2" Elevation="3">
+            <MudText Typo="Typo.h6">@loc["ExportNewAssignRecord"]</MudText>
+            <MudButton HtmlTag="label"
+                       Variant="Variant.Filled"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Filled.PlayCircleOutline"
+                       OnClick="@RecordBtnClick"
+                       Disabled="@isProcessing">
+                @loc["ExportBtn"]
+            </MudButton>
+            <div class="card-body">
+                <MudItem>
+                    <MudProgressCircular Color="Color.Secondary" Indeterminate="@isProcessing" />
+                </MudItem>
+            </div>
+        </MudPaper>
+    </div>
+</div>
+
+@code {
+    private bool isDelegationUploading = false;
+    private bool isAssignRecordUploading = false;
+    private IBrowserFile uploadDelegationForm = null;
+    private IBrowserFile uploadAssignRecord = null;
+    private bool isShowAssignAlert = false;
+    private bool isShowDelegationAlert = false;
+    private bool isProcessing = false;
+    private string delegationErrMsg = "";
+    private string assignRecordErrMsg = "";
+
+    private void UploadAssignRecordBtnClick(InputFileChangeEventArgs e)
+    {
+        isAssignRecordUploading = true;
+        try
+        {
+            uploadAssignRecord = e.File;
+            if (uploadAssignRecord == null || !(uploadAssignRecord.Name.ToLower().EndsWith(".xls") ||
+                    uploadAssignRecord.Name.ToLower().EndsWith(".xlsx")))
+            {
+                isShowAssignAlert = true;
+                assignRecordErrMsg = loc["ErrorUploadFile"];
+            }
+            else
+            {
+                isShowAssignAlert = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("File: {Filename} Error: {Error}",
+                e.File.Name, ex.Message);
+        }
+        isAssignRecordUploading = false;
+    }
+
+    private async Task UploadDeleFormBtnClick(InputFileChangeEventArgs e)
+    {
+        isDelegationUploading = true;
+        try
+        {
+            uploadDelegationForm = e.File;
+            if (uploadDelegationForm == null || !(uploadDelegationForm.Name.ToLower().EndsWith(".xls") ||
+                    uploadDelegationForm.Name.ToLower().EndsWith(".xlsx")))
+            {
+                isShowDelegationAlert = true;
+                delegationErrMsg = loc["ErrorUploadFile"];
+            }
+            else
+            {
+                isShowDelegationAlert = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("File: {Filename} Error: {Error}",
+                e.File.Name, ex.Message);
+        }
+        isDelegationUploading = false;
+    }
+
+    private async Task RecordBtnClick()
+    {
+        if (uploadAssignRecord==null)
+        {
+            isShowAssignAlert = true;
+            delegationErrMsg = loc["SelectPreAssignRecord"];
+        }
+        else if(uploadDelegationForm==null)
+        {
+            isShowDelegationAlert = true;
+            delegationErrMsg = loc["SelectDelegationForm"];
+        }
+        else
+        {
+            isShowAssignAlert = false;
+            isShowDelegationAlert = false;
+            isProcessing = true;
+            using MemoryStream delegationMs = new MemoryStream();
+            await uploadDelegationForm.OpenReadStream().CopyToAsync(delegationMs);
+            using MemoryStream assignMs = new MemoryStream();
+            await uploadAssignRecord.OpenReadStream().CopyToAsync(assignMs);
+            byte[] data = recordService.Start(delegationMs, assignMs);
+            string resFileName = string.Format("{0}{1}.{2}", "assign_",
+                    DateTime.Now.ToString("yyyyMMddHHmmss"), "xls");
+            await BlazorDownloadFileService.DownloadFile(resFileName, data, "application/octet-stream");
+            isProcessing = false;
+        }
+    }
+}

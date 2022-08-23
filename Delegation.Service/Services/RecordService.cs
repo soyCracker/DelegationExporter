@@ -3,6 +3,7 @@ using Delegation.Service.Utils;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using System.IO;
 
 namespace Delegation.Service.Services
 {
@@ -16,38 +17,49 @@ namespace Delegation.Service.Services
         }
 
         public byte[] Start(string formFile, string assignFile)
+        {       
+            using FileStream formFileFs = new FileStream(formFile, FileMode.Open);
+            using MemoryStream formFileMs = new MemoryStream();
+            formFileFs.CopyTo(formFileMs);
+            List<DelegationVM> vmList = ReadDelegation(formFileMs);
+
+            using FileStream assignFileFs = new FileStream(assignFile, FileMode.Open);
+            using MemoryStream assignFileMs = new MemoryStream();
+            return Record(vmList, assignFileMs);
+        }
+
+        public byte[] Start(MemoryStream formFile, MemoryStream assignFile)
         {
             List<DelegationVM> vmList = ReadDelegation(formFile);
             return Record(vmList, assignFile);
         }
 
-        private List<DelegationVM> ReadDelegation(string filePath)
+        private List<DelegationVM> ReadDelegation(MemoryStream formFile)
         {
             try
             {
-                using (FileStream fs = new FileStream(filePath, FileMode.Open))
+                IWorkbook workbook;
+                // 避免報異常EOF in header
+                formFile.Position = 0;
+                try
                 {
-                    IWorkbook workbook;
-                    try
-                    {
-                        workbook = new XSSFWorkbook(fs);
-                    }
-                    catch (Exception)
-                    {
-                        workbook = new HSSFWorkbook(fs);
-                    }
-                    ISheet sheet = workbook.GetSheetAt(0);
-                    List<DelegationVM> vmList = new List<DelegationVM>();
-                    for (int j = 1; j <= 2; j++)
-                    {
-                        for (int i = 4; i <= sheet.LastRowNum; i++)
-                        {
-                            SetDelegationList(sheet, i, vmList, j);
-                        }
-                    }
-                    workbook.Close();
-                    return vmList;
+                    workbook = new XSSFWorkbook(formFile);
                 }
+                catch (Exception)
+                {
+                    workbook = new HSSFWorkbook(formFile);
+                }
+                ISheet sheet = workbook.GetSheetAt(0);
+                List<DelegationVM> vmList = new List<DelegationVM>();
+                for (int j = 1; j <= 2; j++)
+                {
+                    for (int i = 4; i <= sheet.LastRowNum; i++)
+                    {
+                        SetDelegationList(sheet, i, vmList, j);
+                    }
+                }
+                workbook.Close();
+                return vmList;
             }
             catch (IOException)
             {
@@ -100,36 +112,34 @@ namespace Delegation.Service.Services
             vmList.Add(vm);
         }
 
-        private byte[] Record(List<DelegationVM> vmList, string assignFilePath)
+        private byte[] Record(List<DelegationVM> vmList, MemoryStream assignFile)
         {
             try
             {
-                using (FileStream fs = new FileStream(assignFilePath, FileMode.Open))
+                IWorkbook workbook;
+                assignFile.Position = 0;
+                try
                 {
-                    IWorkbook workbook;
-                    try
-                    {
-                        workbook = new XSSFWorkbook(fs);
-                    }
-                    catch (Exception)
-                    {
-                        workbook = new HSSFWorkbook(fs);
-                    }
-                    ISheet broSheet = workbook.GetSheetAt(0);
-                    ISheet sisSheet = workbook.GetSheetAt(1);
-                    ISheet assSheet = workbook.GetSheetAt(2);
-                    foreach (DelegationVM vm in vmList)
-                    {
-                        if (!RecordBroSheet(broSheet, vm))
-                        {
-                            RecordSisSheet(sisSheet, assSheet, vm);
-                        }
-                    }
-                    MemoryStream ms = new MemoryStream();
-                    workbook.Write(ms);
-                    workbook.Close();
-                    return ms.ToArray();
+                    workbook = new XSSFWorkbook(assignFile);
                 }
+                catch (Exception)
+                {
+                    workbook = new HSSFWorkbook(assignFile);
+                }
+                ISheet broSheet = workbook.GetSheetAt(0);
+                ISheet sisSheet = workbook.GetSheetAt(1);
+                ISheet assSheet = workbook.GetSheetAt(2);
+                foreach (DelegationVM vm in vmList)
+                {
+                    if (!RecordBroSheet(broSheet, vm))
+                    {
+                        RecordSisSheet(sisSheet, assSheet, vm);
+                    }
+                }
+                MemoryStream ms = new MemoryStream();
+                workbook.Write(ms);
+                workbook.Close();
+                return ms.ToArray();
             }
             catch (Exception)
             {

@@ -117,31 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="PageTitle" xml:space="preserve">
-    <value>輸出委派</value>
+  <data name="ExportBtn" xml:space="preserve">
+    <value>開始</value>
   </data>
-  <data name="SelectDeleFormCardStr" xml:space="preserve">
-    <value>1. 選擇委派表檔案</value>
+  <data name="ExportNewAssignRecord" xml:space="preserve">
+    <value>輸出新委派紀錄</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>紀錄委派表</value>
+  </data>
+  <data name="SelectDelegationForm" xml:space="preserve">
+    <value>選擇委派表</value>
   </data>
   <data name="SelectFileBtn" xml:space="preserve">
-    <value>選擇委派表檔案</value>
+    <value>選擇檔案</value>
   </data>
-  <data name="ExportCardStr" xml:space="preserve">
-    <value>2. 輸出委派單</value>
-  </data>
-  <data name="ExportBtn" xml:space="preserve">
-    <value>輸出委派單</value>
-  </data>
-  <data name="ErrorUploadFile" xml:space="preserve">
-    <value>請上傳正確檔案格式(xls or xlsx)</value>
-  </data>
-  <data name="Exporting" xml:space="preserve">
-    <value>輸出中......</value>
-  </data>
-  <data name="Uploading" xml:space="preserve">
-    <value>上傳中......</value>
-  </data>
-  <data name="Ziping" xml:space="preserve">
-    <value>壓縮中......</value>
+  <data name="SelectPreAssignRecord" xml:space="preserve">
+    <value>選擇上一次的委派紀錄</value>
   </data>
 </root>
