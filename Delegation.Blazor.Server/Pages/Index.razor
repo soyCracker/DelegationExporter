@@ -121,7 +121,12 @@
             isShowAlert = false;
             isExporting = true;
             exportProcessMsg = loc["Exporting"];
-            string temp = Path.Combine(Constant.FILE_FOLDER, "temp.xlsx");
+            if (!Directory.Exists(Constant.FILE_FOLDER))
+            {
+                Directory.CreateDirectory(Constant.FILE_FOLDER);
+            }
+            string fileExt = uploadForm.Name.ToLower().EndsWith("xlsx") ? "xlsx" : "xls";
+            string temp = Path.Combine(Constant.FILE_FOLDER, string.Format("temp.{0}", fileExt));
             using (FileStream fs = new FileStream(temp, FileMode.Create))
             {
                 await uploadForm.OpenReadStream().CopyToAsync(fs);

@@ -28,7 +28,8 @@ namespace DelegationConsoleTool.Kits
             else if (files.Length == 1)
             {
                 string file = files[0];
-                string tempXls = file + "TEMPX";
+                string fileExt = file.ToLower().EndsWith("xlsx") ? "xlsx" : "xls";
+                string tempXls = string.Format("{0}_temp.{1}", file, fileExt);
                 if (File.Exists(tempXls))
                 {
                     File.Delete(tempXls);
@@ -36,7 +37,6 @@ namespace DelegationConsoleTool.Kits
                 File.Copy(file, tempXls);
                 Console.WriteLine("tempXls:" + tempXls + "\n");
                 return tempXls;
-
             }
             return "";
         }
